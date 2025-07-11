@@ -1,0 +1,33 @@
+{
+  "name": "teapotapps",
+  "version": "0.0.1-beta",
+  "main": "index.js",
+  "type": "module",
+  "bin": {
+    "create-teapotapps": "./bin/cli.js",
+    "teapotapps": "./bin/cli.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js"
+  },
+  "description": "TeapotApps is a lightweight Node.js framework using JavaScript and ESM. It offers a modular, clean structure to build scalable backend applications and APIs easily. Designed for modern development, it leverages native ESM for better maintainability and future-proofing.",
+  "keywords": ["nodejs", "framework", "backend", "api", "esm", "teapotapps"],
+  "author": "ivannofick",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  },
+  "dependencies": {
+    "axios": "^1.10.0",
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^5.1.0",
+    "fs-extra": "^11.3.0",
+    "pg": "^8.16.3",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.37.7"
+  }
+}
