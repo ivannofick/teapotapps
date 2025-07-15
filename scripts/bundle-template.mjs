@@ -7,7 +7,7 @@ const __dirname = path.dirname(__filename);
 
 // Path
 const source = path.resolve(__dirname, '../packages/app');
-const target = path.resolve(__dirname, '../packages/create-teapotapps/app');
+const target = path.resolve(__dirname, '../packages/teapotapps/app');
 
 console.log(`📦 Copying API template to CLI...`);
 
