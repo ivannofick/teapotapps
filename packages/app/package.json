@@ -1,5 +1,5 @@
 {
-  "name": "@teapotapps/api",
+  "name": "@teapotapps/app",
   "version": "0.0.1",
   "type": "module",
   "main": "index.js",

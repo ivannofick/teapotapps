@@ -1,6 +1,6 @@
 {
-  "name": "teapotapps",
-  "version": "0.0.0-beta.15",
+  "name": "create-teapotapps",
+  "version": "0.0.0-beta.22",
   "type": "module",
   "bin": {
     "create-teapotapps": "./cli.js",

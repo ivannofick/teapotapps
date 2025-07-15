@@ -6,11 +6,11 @@
     "packages/*"
   ],
   "bin": {
-    "teapotapps": "./packages/cli/cli.js"
+    "teapotapps": "./packages/create-teapotapps/cli.js"
   },
   "scripts": {
-    "dev": "yarn workspace @teapotapps/api run dev",
-    "cli": "yarn workspace @teapotapps/cli run cli"
+    "dev": "yarn workspace @teapotapps/app run dev",
+    "cli": "yarn workspace create-teapotapps run cli"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
