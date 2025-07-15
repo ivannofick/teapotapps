@@ -1,5 +1,5 @@
 {
-  "name": "teapotapps",
+  "name": "teapotapps-project",
   "version": "0.0.1-beta",
   "private": true,
   "workspaces": [
