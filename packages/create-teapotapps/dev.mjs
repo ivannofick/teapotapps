@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 export default async function runDev() {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
-  const rootDir = path.resolve(__dirname, '../api');
+  const rootDir = path.resolve(__dirname, '../app');
   const entryFile = path.resolve(rootDir, 'index.js');
 
   const runner = hasNodemon() ? 'nodemon' : 'node';

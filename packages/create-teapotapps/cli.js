@@ -10,7 +10,7 @@ const args = process.argv.slice(2);
 
 // Handle --version or -v
 if (args.includes('--version') || args.includes('-v')) {
-  const pkgPath = path.resolve(__dirname, '../api', 'package.json');
+  const pkgPath = path.resolve(__dirname, '../app', 'package.json');
   try {
     const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
     console.log(`🫖 TeapotApps v${pkg.version}`);
