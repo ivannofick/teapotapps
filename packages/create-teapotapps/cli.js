@@ -1,16 +1,15 @@
 #!/usr/bin/env node
-import { fileURLToPath, pathToFileURL } from 'url';
-import path from 'path';
 import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const args = process.argv.slice(2);
 
-// Handle --version or -v
 if (args.includes('--version') || args.includes('-v')) {
-  const pkgPath = path.resolve(__dirname, '../app', 'package.json');
+  const pkgPath = path.join(__dirname, 'package.json');
   try {
     const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
     console.log(`🫖 TeapotApps v${pkg.version}`);
@@ -20,15 +19,26 @@ if (args.includes('--version') || args.includes('-v')) {
   process.exit(0);
 }
 
-const cmd = args[0] || 'help';
-const cmdFile = pathToFileURL(path.join(__dirname, `${cmd}.mjs`)).href;
+const knownCommands = ['create', 'help', 'dev', 'generate'];
+const [firstArg, ...restArgs] = args;
+
+let cmd = 'create';
+let cmdArgs = args;
+
+if (knownCommands.includes(firstArg)) {
+  cmd = firstArg;
+  cmdArgs = restArgs;
+}
+
+const cmdFile = path.join(__dirname, `${cmd}.mjs`);
+const cmdUrl = new URL(`file://${cmdFile}`);
 
 try {
-  const module = await import(cmdFile);
+  const module = await import(cmdUrl.href);
   if (typeof module.default === 'function') {
-    await module.default(args.slice(1));
+    await module.default(cmdArgs);
   }
 } catch (err) {
-  console.error(`❌ Unknown command: ${cmd}`);
+  console.error(`❌ Unknown command: ${cmd}`, err);
   process.exit(1);
 }

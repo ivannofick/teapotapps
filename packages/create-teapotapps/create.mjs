@@ -31,7 +31,7 @@ const __dirname = path.dirname(__filename);
 export default async function runCreate(args = []) {
 	const projectName = args[0] || 'teapotapps';
 	const camelCaseName = toCamelCase(projectName);
-	const templateDir = path.resolve(__dirname, '../app');
+	const templateDir = path.resolve(__dirname, 'app');
 	const targetDir = path.resolve(process.cwd(), projectName);
 	const exclude = ['bin', 'node_modules', '.git', 'package-lock.json', 'yarn.lock', '.DS_Store'];
 

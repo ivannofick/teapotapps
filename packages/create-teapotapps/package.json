@@ -1,6 +1,6 @@
 {
   "name": "create-teapotapps",
-  "version": "0.0.0-beta.1",
+  "version": "0.0.0-beta.12",
   "type": "module",
   "bin": {
     "create-teapotapps": "./cli.js"
@@ -13,7 +13,7 @@
     "help.mjs",
     "helpers.mjs",
     "installDatabase.mjs",
-    "api"
+    "app"
   ],
   "scripts": {
     "cli": "node cli.js",
@@ -21,9 +21,7 @@
     "postpublish": "rm -rf ./app"
   },
   "dependencies": {
-    "inquirer": "^12.7.0"
-  },
-  "devDependencies": {
+    "inquirer": "^12.7.0",
     "fs-extra": "^11.3.0"
   }
 }
