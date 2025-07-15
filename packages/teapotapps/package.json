@@ -1,6 +1,6 @@
 {
   "name": "teapotapps",
-  "version": "0.0.0-beta.14",
+  "version": "0.0.0-beta.15",
   "type": "module",
   "bin": {
     "create-teapotapps": "./cli.js",
@@ -14,7 +14,10 @@
     "help.mjs",
     "helpers.mjs",
     "installDatabase.mjs",
-    "app"
+    "app/index.js",
+    "app/package.json",
+    "app/env.example",
+    "app/src"
   ],
   "scripts": {
     "cli": "node cli.js",
