@@ -1,6 +1,7 @@
 import { runCommand, startSpinner } from "./helpers.mjs";
 import path from 'path';
 import inquirer from 'inquirer';
+import { bundleDatabase } from "./bundleDatabase.mjs";
 
 
 export async function installDatabases(args = []) {
@@ -34,7 +35,7 @@ export async function installDatabases(args = []) {
             clearInterval(hstoreSpinner);
             process.stdout.write('\r✅ pg-hstore installed successfully!\n');
         }
-
+        await bundleDatabase(args)
     } catch (error) {
         if (error.message?.includes('SIGINT')) {
             console.log('\n❌ Prompt dibatalkan oleh user (Ctrl+C). Keluar...');

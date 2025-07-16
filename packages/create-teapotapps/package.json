@@ -21,6 +21,7 @@
   ],
   "scripts": {
     "cli": "node cli.js",
+    "publishLocal": "node ../../scripts/bundle-template.mjs && npm link",
     "prepublishOnly": "node ../../scripts/bundle-template.mjs",
     "postpublish": "rm -rf ./app"
   },

@@ -90,6 +90,8 @@ export default async function runCreate(args = []) {
 			await runCommand('npm', ['install', 'pg-hstore@^2.3.4'], targetDir);
 			clearInterval(hstoreSpinner);
 			process.stdout.write('\r✅ pg-hstore installed successfully!\n');
+			await installDatabases(args)
+
 
 		} else if (installAll === "n") {
 
