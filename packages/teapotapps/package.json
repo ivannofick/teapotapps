@@ -17,13 +17,11 @@
     "app/index.js",
     "app/package.json",
     "app/env.example",
-    "app/src"
+    "app/src",
+    "templates"
   ],
   "scripts": {
-    "cli": "node cli.js",
-    "publishLocal": "node ../../scripts/bundle-template-dev.mjs && npm link",
-    "prepublishOnly": "node ../../scripts/bundle-template-dev.mjs && node ../../scripts/bundle-template.mjs",
-    "postpublish": "rm -rf ./app"
+    "cli": "node cli.js"
   },
   "dependencies": {
     "inquirer": "^12.7.0",
