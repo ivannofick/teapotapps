@@ -37,12 +37,6 @@ export async function bundleMailer(args = []) {
 
         const configsDestPath = path.join(configsDir, 'mail.js');
 
-        console.log('🔎 DEBUG:');
-        console.log('  • libs source dir :', libsSourceDir);
-        console.log('  • libs target dir :', libsDir);
-        console.log('  • configs source  :', configsSourceFile);
-        console.log('  • configs target  :', configsDestPath);
-
         await fs.access(libsSourceDir);
         await fs.access(configsSourceFile);
 
@@ -50,10 +44,8 @@ export async function bundleMailer(args = []) {
         await fs.mkdir(configsDir, { recursive: true });
 
         await copyFolderRecursive(libsSourceDir, libsDir);
-        console.log(`📁 Copied folder utils to ${libsDir}`);
 
         await fs.copyFile(configsSourceFile, configsDestPath);
-        console.log(`📁 Copied mail.js to ${configsDir}`);
 
     } catch (error) {
         if (error.message?.includes('SIGINT')) {

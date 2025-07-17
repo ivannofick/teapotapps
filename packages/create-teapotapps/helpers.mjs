@@ -65,15 +65,12 @@ export function runCommand(command, args, cwd) {
     return new Promise((resolve, reject) => {
         const proc = spawn(command, args, {
             cwd,
-            stdio: 'inherit', // tampilkan semua output ke console
-            shell: true, // supaya npm bisa jalan di Windows juga (optional tapi disarankan)
+            stdio: ['ignore', 'ignore', 'inherit'],
+            shell: true
         });
         proc.on('close', (code) => {
             if (code === 0) resolve();
             else reject(new Error(`${command} exited with code ${code}`));
-        });
-        proc.on('error', (err) => {
-            reject(err);
         });
     });
 }
@@ -111,6 +108,5 @@ export async function addDependency(projectDir, packageName, version) {
         pkg.dependencies = pkg.dependencies || {};
         pkg.dependencies[packageName] = version;
         await fs.writeJson(pkgPath, pkg, { spaces: 2 });
-        console.log(`✅ Added ${packageName}@${version} to package.json dependencies`);
     }
 }

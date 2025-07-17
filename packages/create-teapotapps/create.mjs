@@ -52,7 +52,7 @@ export default async function runCreate(args = []) {
 			}
 		});
 
-		console.log('✅ Project generated successfully!\n');
+		console.log('\n✅ Project generated successfully!');
 
 		const envExamplePath = path.join(targetDir, 'env.example');
 		const envPath = path.join(targetDir, '.env');
@@ -103,10 +103,8 @@ export default async function runCreate(args = []) {
 			'nodemailer',
 			'postgresql',
 		];
-
-
 		const installAll = await askYesNo(
-			'📦 Packages to be installed:\n' +
+			'\n📦 Packages to be installed:\n' +
 			packages.map(pkg => `  • ${pkg}`).join('\n') +
 			'\n❓ Do you want to install all packages?'
 		);
