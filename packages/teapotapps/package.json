@@ -34,6 +34,8 @@
     "helpers.mjs",
     "installDatabase.mjs",
     "bundleDatabase.mjs",
+    "bundleMailer.mjs",
+    "installMailer.mjs",
     "app/index.js",
     "app/package.json",
     "app/env.example",
@@ -42,10 +44,7 @@
     "README.md"
   ],
   "scripts": {
-    "cli": "node cli.js",
-    "publishLocal": "node ../../scripts/bundle-template-dev.mjs && npm link",
-    "prepublishOnly": "node ../../scripts/bundle-template-dev.mjs && node ../../scripts/bundle-template.mjs",
-    "postpublish": "rm -rf ./app"
+    "cli": "node cli.js"
   },
   "dependencies": {
     "fs-extra": "^11.3.0",

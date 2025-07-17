@@ -11,7 +11,7 @@ const target = path.resolve(__dirname, '../packages/teapotapps');
 
 console.log(`📦 Copying API template to CLI...`);
 
-await fs.remove(target); // bersihin dulu
+await fs.remove(target);
 await fs.copy(source, target, {
     filter: (src) => !src.includes('node_modules') && !src.includes('.git')
 });
