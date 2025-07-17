@@ -18,7 +18,8 @@
     "app/package.json",
     "app/env.example",
     "app/src",
-    "templates"
+    "templates",
+    "README.md"
   ],
   "scripts": {
     "cli": "node cli.js"

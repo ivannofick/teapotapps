@@ -6,3 +6,5 @@
 
 # Jangan ignore .gitignore
 !.gitignore
+# Jangan ignore .gitignore
+!README.md
