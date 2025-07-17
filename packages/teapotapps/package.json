@@ -41,7 +41,10 @@
     "README.md"
   ],
   "scripts": {
-    "cli": "node cli.js"
+    "cli": "node cli.js",
+    "publishLocal": "node ../../scripts/bundle-template-dev.mjs && npm link",
+    "prepublishOnly": "node ../../scripts/bundle-template-dev.mjs && node ../../scripts/bundle-template.mjs",
+    "postpublish": "rm -rf ./app"
   },
   "dependencies": {
     "fs-extra": "^11.3.0",
