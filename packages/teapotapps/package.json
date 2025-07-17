@@ -1,7 +1,26 @@
 {
   "name": "teapotapps",
-  "version": "0.0.0-dev.0",
+  "version": "0.1.0",
   "type": "module",
+  "description": "A CLI tool for bootstrapping full-stack projects using the TeapotApps architecture.",
+  "keywords": [
+    "teapotapps",
+    "cli",
+    "boilerplate",
+    "fullstack",
+    "starter-kit",
+    "scaffolding"
+  ],
+  "homepage": "https://github.com/teapotapps/project#readme",
+  "bugs": {
+    "url": "https://github.com/teapotapps/project/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/teapotapps/project.git"
+  },
+  "author": "ivannofick <ivannofick@gmail.com>",
+  "license": "ISC",
   "bin": {
     "create-teapotapps": "./cli.js",
     "teapotapps": "./cli.js"
@@ -25,7 +44,7 @@
     "cli": "node cli.js"
   },
   "dependencies": {
-    "inquirer": "^12.7.0",
-    "fs-extra": "^11.3.0"
+    "fs-extra": "^11.3.0",
+    "inquirer": "^12.7.0"
   }
 }
