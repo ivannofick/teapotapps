@@ -1,7 +1,7 @@
 import fs from 'fs-extra';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { askQuestion, askYesNo, installPackage, runCommand, startSpinner } from './helpers.mjs';
+import { askQuestion, askYesNo, runCommand, startSpinner } from './helpers.mjs';
 import { installDatabases } from './installDatabase.mjs';
 import { installMailer } from './installMailer.mjs';
 
@@ -68,41 +68,6 @@ export default async function runCreate(args = []) {
 			}
 		}
 
-		const packages = [
-			'nodemailer',
-			'postgresql',
-		];
-
-
-		const installAll = await askYesNo(
-			'📦 Packages to be installed:\n' +
-			packages.map(pkg => `  • ${pkg}`).join('\n') +
-			'\n❓ Do you want to install all packages?'
-		);
-
-		if (installAll === 'y') {
-			await installMailer(args)
-			await installDatabases(args)
-
-		} else if (installAll === "n") {
-
-			const installDatabase = await askYesNo('\n📦 Do you want to be install database?:');
-
-			if (installDatabase === 'y') {
-				await installDatabases(args)
-			}
-			const askMailer = await askYesNo('\n📦 Would you like to install the mailer?:');
-
-			if (askMailer === 'y') {
-				await installMailer(args)
-			}
-		}
-
-		// const spinner = startSpinner('\n📦 Installing dependencies');
-		// await runCommand('npm', ['install'], targetDir);
-		// clearInterval(spinner);
-		// process.stdout.write('\r✅ Dependencies installed successfully!\n');
-
 		const authorName = await askQuestion('\n👤 Author name (optional): ');
 
 		const license = await askQuestion('\n📄 License (default: ISC): ');
@@ -132,6 +97,42 @@ export default async function runCreate(args = []) {
 		} else {
 			console.warn('\n⚠️  .env cannot be generated');
 		}
+
+
+		const packages = [
+			'nodemailer',
+			'postgresql',
+		];
+
+
+		const installAll = await askYesNo(
+			'📦 Packages to be installed:\n' +
+			packages.map(pkg => `  • ${pkg}`).join('\n') +
+			'\n❓ Do you want to install all packages?'
+		);
+
+		if (installAll === 'y') {
+			await installMailer(args)
+			await installDatabases(args)
+
+		} else if (installAll === "n") {
+
+			const installDatabase = await askYesNo('\n📦 Do you want to be install database?:');
+
+			if (installDatabase === 'y') {
+				await installDatabases(args)
+			}
+			const askMailer = await askYesNo('\n📦 Would you like to install the mailer?:');
+
+			if (askMailer === 'y') {
+				await installMailer(args)
+
+			}
+		}
+		const spinner = startSpinner('\n📦 Installing dependencies');
+		await runCommand('npm', ['install'], targetDir);
+		clearInterval(spinner);
+		process.stdout.write('\r✅ Dependencies installed successfully!\n');
 
 		console.log('\n🎉 All set!');
 		console.log(`👉  cd ${projectName}`);

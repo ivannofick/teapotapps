@@ -2,7 +2,7 @@
 import { spawn } from 'child_process';
 import readline from 'readline';
 import path from 'path';
-import fs from 'fs/promises';
+import fs from 'fs-extra';
 
 export function askYesNo(question) {
     return new Promise((resolve) => {
@@ -72,7 +72,6 @@ export function runCommand(command, args, cwd) {
             if (code === 0) resolve();
             else reject(new Error(`${command} exited with code ${code}`));
         });
-
         proc.on('error', (err) => {
             reject(err);
         });
@@ -102,63 +101,16 @@ export async function ensurePackageJson(projectDir, projectName = 'teapotapps') 
     }
 }
 
-/**
- * Install npm package di folder proyek dan update package.json jika perlu
- * @param {string} projectDir - path folder proyek (tempat package.json)
- * @param {string} packageName - nama package npm
- * @param {string} version - versi package, contoh '^7.0.3'
- */
-export async function installPackage(projectDir, packageName, version) {
-    await ensurePackageJson(projectDir);
-
-    // Baca package.json lagi setelah dipastikan ada
-    const pkgPath = path.join(projectDir, 'package.json');
-    let pkgRaw = await fs.readFile(pkgPath, 'utf-8');
-    let pkg = JSON.parse(pkgRaw);
-
-    if (!pkg.dependencies) pkg.dependencies = {};
-    if (!pkg.dependencies[packageName]) {
-        pkg.dependencies[packageName] = version;
-        await fs.writeFile(pkgPath, JSON.stringify(pkg, null, 2), 'utf-8');
-        console.log(`✅ Updated package.json with ${packageName} dependency`);
-    } else {
-        console.log(`ℹ️ ${packageName} already in dependencies`);
-    }
-
-    // Jalankan npm install
-    await new Promise((resolve, reject) => {
-        const proc = spawn('npm', ['install'], {
-            cwd: projectDir,
-            stdio: 'inherit',
-            shell: true,
-        });
-
-        proc.on('close', (code) => {
-            if (code === 0) resolve();
-            else reject(new Error(`npm install exited with code ${code}`));
-        });
-
-        proc.on('error', (err) => {
-            reject(err);
-        });
-    });
-}
 
 
 export async function addDependency(projectDir, packageName, version) {
     const pkgPath = path.join(projectDir, 'package.json');
     const pkgRaw = await fs.readFile(pkgPath, 'utf-8');
     const pkg = JSON.parse(pkgRaw);
-
-    if (!pkg.dependencies) {
-        pkg.dependencies = {};
-    }
-
-    if (!pkg.dependencies[packageName]) {
+    if (Object.keys(pkg).length) {
+        pkg.dependencies = pkg.dependencies || {};
         pkg.dependencies[packageName] = version;
-        await fs.writeFile(pkgPath, JSON.stringify(pkg, null, 2), 'utf-8');
+        await fs.writeJson(pkgPath, pkg, { spaces: 2 });
         console.log(`✅ Added ${packageName}@${version} to package.json dependencies`);
-    } else {
-        console.log(`ℹ️ ${packageName} already in dependencies`);
     }
 }

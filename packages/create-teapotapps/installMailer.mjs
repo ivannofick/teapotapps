@@ -1,4 +1,4 @@
-import { addDependency, installPackage, startSpinner } from "./helpers.mjs";
+import { addDependency, startSpinner } from "./helpers.mjs";
 import path from 'path';
 import { bundleMailer } from "./bundleMailer.mjs";
 
