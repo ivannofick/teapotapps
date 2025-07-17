@@ -3,7 +3,7 @@
  * -----------------------------
  * 
  * This file initializes and exports a preconfigured Nodemailer transporter
- * using the global environment variables loaded at runtime (TEA_ or APP_).
+ * using the global environment variables loaded at runtime (APP_ or APP_).
  * 
  * ✉️ Purpose:
  * - To enable sending emails via SMTP using Nodemailer

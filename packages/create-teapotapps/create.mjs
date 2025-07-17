@@ -125,11 +125,11 @@ export default async function runCreate(args = []) {
 			const teaKey = generateSecret(45);
 
 			envContent = envContent
-				.replace(/^TEA_NAME=.*$/m, `TEA_NAME=${authorName || 'Teapotapps'}`)
-				.replace(/^TEA_ACCESS_TOKEN_SECRET=.*$/m, `TEA_ACCESS_TOKEN_SECRET='${accessTokenSecret}'`)
-				.replace(/^TEA_HOST=.*$/m, `TEA_HOST='0.0.0.0'`)
-				.replace(/^TEA_PORT=.*$/m, `TEA_PORT=3010`)
-				.replace(/^TEA_KEY=.*$/m, `TEA_KEY='${teaKey}'`);
+				.replace(/^APP_NAME=.*$/m, `APP_NAME=${authorName || 'Teapotapps'}`)
+				.replace(/^APP_ACCESS_TOKEN_SECRET=.*$/m, `APP_ACCESS_TOKEN_SECRET='${accessTokenSecret}'`)
+				.replace(/^APP_HOST=.*$/m, `APP_HOST='0.0.0.0'`)
+				.replace(/^APP_PORT=.*$/m, `APP_PORT=3010`)
+				.replace(/^APP_KEY=.*$/m, `APP_KEY='${teaKey}'`);
 
 			await fs.writeFile(envPath, envContent);
 			console.log('📄 .env file generated successfully');
