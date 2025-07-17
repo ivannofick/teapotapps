@@ -1,6 +1,6 @@
 {
   "name": "teapotapps",
-  "version": "0.0.0-dev.2",
+  "version": "0.0.0-dev.2-ready",
   "type": "module",
   "description": "A CLI tool for bootstrapping full-stack projects using the TeapotApps architecture.",
   "keywords": [
