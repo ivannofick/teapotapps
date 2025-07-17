@@ -17,6 +17,7 @@
     "app/index.js",
     "app/package.json",
     "app/env.example",
+    "bundleDatabase.mjs",
     "app/src"
   ],
   "scripts": {

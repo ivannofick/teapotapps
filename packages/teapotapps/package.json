@@ -33,6 +33,7 @@
     "help.mjs",
     "helpers.mjs",
     "installDatabase.mjs",
+    "bundleDatabase.mjs",
     "app/index.js",
     "app/package.json",
     "app/env.example",
