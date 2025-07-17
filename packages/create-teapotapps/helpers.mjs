@@ -1,6 +1,8 @@
 // askYesNo.mjs
 import { spawn } from 'child_process';
 import readline from 'readline';
+import path from 'path';
+import fs from 'fs/promises';
 
 export function askYesNo(question) {
     return new Promise((resolve) => {
@@ -26,7 +28,6 @@ export function askYesNo(question) {
     });
 }
 
-
 export function startSpinner(baseMessage, interval = 300) {
     let dotCount = 1;
     const maxDots = 3;
@@ -46,7 +47,6 @@ export function startSpinner(baseMessage, interval = 300) {
     return spinner;
 }
 
-
 export function askQuestion(query) {
     const rl = readline.createInterface({
         input: process.stdin,
@@ -65,11 +65,100 @@ export function runCommand(command, args, cwd) {
     return new Promise((resolve, reject) => {
         const proc = spawn(command, args, {
             cwd,
-            stdio: ['ignore', 'ignore', 'inherit'],
+            stdio: 'inherit', // tampilkan semua output ke console
+            shell: true, // supaya npm bisa jalan di Windows juga (optional tapi disarankan)
         });
         proc.on('close', (code) => {
             if (code === 0) resolve();
             else reject(new Error(`${command} exited with code ${code}`));
         });
+
+        proc.on('error', (err) => {
+            reject(err);
+        });
     });
+}
+
+/**
+ * Buat minimal package.json jika belum ada atau invalid
+ * @param {string} projectDir - folder proyek
+ * @param {string} projectName - nama proyek (default 'teapotapps')
+ */
+export async function ensurePackageJson(projectDir, projectName = 'teapotapps') {
+    const pkgPath = path.join(projectDir, 'package.json');
+    try {
+        const pkgRaw = await fs.readFile(pkgPath, 'utf-8');
+        JSON.parse(pkgRaw); // Cek valid JSON
+    } catch {
+        // Kalau file ga ada atau invalid, bikin minimal package.json
+        const minimalPkg = {
+            name: projectName,
+            version: '1.0.0',
+            type: 'module',
+            dependencies: {}
+        };
+        await fs.writeFile(pkgPath, JSON.stringify(minimalPkg, null, 2), 'utf-8');
+        console.log('✅ Created minimal package.json');
+    }
+}
+
+/**
+ * Install npm package di folder proyek dan update package.json jika perlu
+ * @param {string} projectDir - path folder proyek (tempat package.json)
+ * @param {string} packageName - nama package npm
+ * @param {string} version - versi package, contoh '^7.0.3'
+ */
+export async function installPackage(projectDir, packageName, version) {
+    await ensurePackageJson(projectDir);
+
+    // Baca package.json lagi setelah dipastikan ada
+    const pkgPath = path.join(projectDir, 'package.json');
+    let pkgRaw = await fs.readFile(pkgPath, 'utf-8');
+    let pkg = JSON.parse(pkgRaw);
+
+    if (!pkg.dependencies) pkg.dependencies = {};
+    if (!pkg.dependencies[packageName]) {
+        pkg.dependencies[packageName] = version;
+        await fs.writeFile(pkgPath, JSON.stringify(pkg, null, 2), 'utf-8');
+        console.log(`✅ Updated package.json with ${packageName} dependency`);
+    } else {
+        console.log(`ℹ️ ${packageName} already in dependencies`);
+    }
+
+    // Jalankan npm install
+    await new Promise((resolve, reject) => {
+        const proc = spawn('npm', ['install'], {
+            cwd: projectDir,
+            stdio: 'inherit',
+            shell: true,
+        });
+
+        proc.on('close', (code) => {
+            if (code === 0) resolve();
+            else reject(new Error(`npm install exited with code ${code}`));
+        });
+
+        proc.on('error', (err) => {
+            reject(err);
+        });
+    });
+}
+
+
+export async function addDependency(projectDir, packageName, version) {
+    const pkgPath = path.join(projectDir, 'package.json');
+    const pkgRaw = await fs.readFile(pkgPath, 'utf-8');
+    const pkg = JSON.parse(pkgRaw);
+
+    if (!pkg.dependencies) {
+        pkg.dependencies = {};
+    }
+
+    if (!pkg.dependencies[packageName]) {
+        pkg.dependencies[packageName] = version;
+        await fs.writeFile(pkgPath, JSON.stringify(pkg, null, 2), 'utf-8');
+        console.log(`✅ Added ${packageName}@${version} to package.json dependencies`);
+    } else {
+        console.log(`ℹ️ ${packageName} already in dependencies`);
+    }
 }

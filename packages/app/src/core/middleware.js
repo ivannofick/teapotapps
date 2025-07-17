@@ -1,5 +1,3 @@
-// src/middlewares/request.js
-
 /**
  * Simple request logger middleware.
  * Logs method and URL of each incoming request.

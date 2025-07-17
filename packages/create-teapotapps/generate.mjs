@@ -106,6 +106,16 @@ function parseEnv(content) {
 }
 
 function generateSecret(length = 48) {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+';
-    return Array.from({ length }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charsLength = chars.length;
+
+    const timestampPart = Date.now().toString(36);
+    const randomLength = length - timestampPart.length;
+    let randomPart = '';
+    for (let i = 0; i < randomLength; i++) {
+        const randomIndex = Math.floor(Math.random() * charsLength);
+        randomPart += chars.charAt(randomIndex);
+    }
+
+    return timestampPart + randomPart;
 }

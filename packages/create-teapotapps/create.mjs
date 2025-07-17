@@ -1,19 +1,25 @@
 import fs from 'fs-extra';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { askQuestion, askYesNo, runCommand, startSpinner } from './helpers.mjs';
+import { askQuestion, askYesNo, installPackage, runCommand, startSpinner } from './helpers.mjs';
 import { installDatabases } from './installDatabase.mjs';
+import { installMailer } from './installMailer.mjs';
 
 
 function generateSecret(length = 48) {
-	const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+';
-	let secret = '';
-	for (let i = 0; i < length; i++) {
-		secret += chars.charAt(Math.floor(Math.random() * chars.length));
-	}
-	return secret;
-}
+	const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+	const charsLength = chars.length;
 
+	const timestampPart = Date.now().toString(36);
+	const randomLength = length - timestampPart.length;
+	let randomPart = '';
+	for (let i = 0; i < randomLength; i++) {
+		const randomIndex = Math.floor(Math.random() * charsLength);
+		randomPart += chars.charAt(randomIndex);
+	}
+
+	return timestampPart + randomPart;
+}
 
 
 function toCamelCase(str) {
@@ -75,23 +81,8 @@ export default async function runCreate(args = []) {
 		);
 
 		if (installAll === 'y') {
-			const mailSpinner = startSpinner('\n✉️ Installing nodemailer');
-			await runCommand('npm', ['install', 'nodemailer@^7.0.3'], targetDir);
-			clearInterval(mailSpinner);
-			process.stdout.write('\r✅ Nodemailer installed successfully!\n');
-
-
-			const pgSpinner = startSpinner('\n🐘 Installing pg');
-			await runCommand('npm', ['install', 'pg@^8.16.3'], targetDir);
-			clearInterval(pgSpinner);
-			process.stdout.write('\r✅ PostgreSQL installed successfully!\n');
-
-			const hstoreSpinner = startSpinner('\n📦 Installing pg-hstore');
-			await runCommand('npm', ['install', 'pg-hstore@^2.3.4'], targetDir);
-			clearInterval(hstoreSpinner);
-			process.stdout.write('\r✅ pg-hstore installed successfully!\n');
+			await installMailer(args)
 			await installDatabases(args)
-
 
 		} else if (installAll === "n") {
 
@@ -100,41 +91,46 @@ export default async function runCreate(args = []) {
 			if (installDatabase === 'y') {
 				await installDatabases(args)
 			}
+			const askMailer = await askYesNo('\n📦 Would you like to install the mailer?:');
 
+			if (askMailer === 'y') {
+				await installMailer(args)
+			}
 		}
 
-		const spinner = startSpinner('\n📦 Installing dependencies');
-		await runCommand('npm', ['install'], targetDir);
-		clearInterval(spinner);
-		process.stdout.write('\r✅ Dependencies installed successfully!\n');
+		// const spinner = startSpinner('\n📦 Installing dependencies');
+		// await runCommand('npm', ['install'], targetDir);
+		// clearInterval(spinner);
+		// process.stdout.write('\r✅ Dependencies installed successfully!\n');
 
 		const authorName = await askQuestion('\n👤 Author name (optional): ');
-		const license = await askQuestion('📄 License (default: ISC): ');
+
+		const license = await askQuestion('\n📄 License (default: ISC): ');
 
 		if (Object.keys(pkg).length) {
 			pkg.name = camelCaseName; // 🆕 Tambah nama dari folder
 			pkg.author = authorName || 'Teapotapps'; // 🆕 Default ke Teapotapps
 			pkg.license = license || 'ISC';
 			await fs.writeJson(pkgPath, pkg, { spaces: 2 });
-			console.log('📝 Successfully updated package.json with name, author, and license');
+			console.log('\n📝 Successfully updated package.json with name, author, and license');
 		}
 
 		if (await fs.pathExists(envExamplePath)) {
 			let envContent = await fs.readFile(envExamplePath, 'utf8');
 			const accessTokenSecret = generateSecret(45);
-			const teaKey = generateSecret(45);
+			const key = generateSecret(45);
 
 			envContent = envContent
-				.replace(/^APP_NAME=.*$/m, `APP_NAME=${authorName || 'Teapotapps'}`)
+				.replace(/^APP_NAME=.*$/m, `APP_NAME=${projectName || 'Teapotapps'}`)
 				.replace(/^APP_ACCESS_TOKEN_SECRET=.*$/m, `APP_ACCESS_TOKEN_SECRET='${accessTokenSecret}'`)
 				.replace(/^APP_HOST=.*$/m, `APP_HOST='0.0.0.0'`)
 				.replace(/^APP_PORT=.*$/m, `APP_PORT=3010`)
-				.replace(/^APP_KEY=.*$/m, `APP_KEY='${teaKey}'`);
+				.replace(/^APP_KEY=.*$/m, `APP_KEY='${key}'`);
 
 			await fs.writeFile(envPath, envContent);
-			console.log('📄 .env file generated successfully');
+			console.log('\n📄 .env file generated successfully');
 		} else {
-			console.warn('⚠️  .env cannot be generated');
+			console.warn('\n⚠️  .env cannot be generated');
 		}
 
 		console.log('\n🎉 All set!');
