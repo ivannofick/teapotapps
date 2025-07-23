@@ -1,6 +1,7 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import api from "./routes/api.js";
+import web from "./routes/web.js";
 import corsHandler from "./configs/cors.js";
 import './configs/env.js';
 import { logger } from "./core/middleware.js";
@@ -19,5 +20,6 @@ app.use((req, res, next) => {
 app.use(logger);
 
 app.use(api);
+app.use(web);
 
 export default app;
