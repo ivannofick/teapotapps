@@ -35,7 +35,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export default async function runCreate(args = []) {
-	const projectName = args[0] || 'teapotapps';
+	const nameApps = args[0] != '.' || !args[0]  ? args[0] : 'teapotapps';
+	const projectName = appName;
 	const camelCaseName = toCamelCase(projectName);
 	const templateDir = path.resolve(__dirname, 'app');
 	const targetDir = path.resolve(process.cwd(), projectName);
@@ -71,10 +72,10 @@ export default async function runCreate(args = []) {
 		const authorName = await askQuestion('\n👤 Author name (optional): ');
 
 		const license = await askQuestion('\n📄 License (default: ISC): ');
-		const nameApps = authorName != '.' || !authorName ? authorName : 'Teapotapps';
+		const authorNameCondition = authorName != '.' || !authorName ? authorName : 'Teapotapps';
 		if (Object.keys(pkg).length) {
 			pkg.name = camelCaseName; // 🆕 Tambah nama dari folder
-			pkg.author = nameApps; // 🆕 Default ke Teapotapps
+			pkg.author = authorNameCondition; // 🆕 Default ke Teapotapps
 			pkg.license = license || 'ISC';
 			await fs.writeJson(pkgPath, pkg, { spaces: 2 });
 			console.log('\n📝 Successfully updated package.json with name, author, and license');
