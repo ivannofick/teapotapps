@@ -71,10 +71,10 @@ export default async function runCreate(args = []) {
 		const authorName = await askQuestion('\n👤 Author name (optional): ');
 
 		const license = await askQuestion('\n📄 License (default: ISC): ');
-
+		const nameApps = authorName != '.' || !authorName ? authorName : 'Teapotapps';
 		if (Object.keys(pkg).length) {
 			pkg.name = camelCaseName; // 🆕 Tambah nama dari folder
-			pkg.author = authorName || 'Teapotapps'; // 🆕 Default ke Teapotapps
+			pkg.author = nameApps; // 🆕 Default ke Teapotapps
 			pkg.license = license || 'ISC';
 			await fs.writeJson(pkgPath, pkg, { spaces: 2 });
 			console.log('\n📝 Successfully updated package.json with name, author, and license');
@@ -86,7 +86,7 @@ export default async function runCreate(args = []) {
 			const key = generateSecret(45);
 
 			envContent = envContent
-				.replace(/^APP_NAME=.*$/m, `APP_NAME=${projectName || 'Teapotapps'}`)
+				.replace(/^APP_NAME=.*$/m, `APP_NAME=${nameApps}`)
 				.replace(/^APP_ACCESS_TOKEN_SECRET=.*$/m, `APP_ACCESS_TOKEN_SECRET='${accessTokenSecret}'`)
 				.replace(/^APP_HOST=.*$/m, `APP_HOST='0.0.0.0'`)
 				.replace(/^APP_PORT=.*$/m, `APP_PORT=3010`)
@@ -112,7 +112,6 @@ export default async function runCreate(args = []) {
 		if (installAll === 'y') {
 			await installMailer(args)
 			await installDatabases(args)
-
 		} else if (installAll === "n") {
 
 			const installDatabase = await askYesNo('\n📦 Do you want to be install database?:');
