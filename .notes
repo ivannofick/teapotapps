@@ -1,0 +1,9 @@
+for publish npm
+- run 
+node scripts/bundle-template.mjs
+- navigate to 
+packages/teapotapps
+- run 
+npm publish --access public
+
+done :3

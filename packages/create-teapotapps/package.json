@@ -18,7 +18,8 @@
     "app/package.json",
     "app/env.example",
     "bundleDatabase.mjs",
-    "app/src"
+    "app/src",
+    "README.md"
   ],
   "scripts": {
     "cli": "node cli.js",
