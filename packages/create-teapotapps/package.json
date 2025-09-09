@@ -6,6 +6,24 @@
     "create-teapotapps": "./cli.js",
     "teapotapps": "./cli.js"
   },
+    "keywords": [
+    "teapotapps",
+    "cli",
+    "boilerplate",
+    "fullstack",
+    "starter-kit",
+    "scaffolding"
+  ],
+  "homepage": "https://github.com/teapotapps/project#readme",
+  "bugs": {
+    "url": "https://github.com/teapotapps/project/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/teapotapps/project.git"
+  },
+  "author": "ivannofick <ivannofick@gmail.com>",
+  "license": "ISC",
   "files": [
     "cli.js",
     "create.mjs",

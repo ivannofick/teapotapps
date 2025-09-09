@@ -39,7 +39,7 @@ export default async function runCreate(args = []) {
 	const projectName = nameApps;
 	const camelCaseName = toCamelCase(projectName);
 	const templateDir = path.resolve(__dirname, 'app');
-	const targetDir = path.resolve(process.cwd(), projectName);
+	const targetDir = path.resolve(process.cwd(), args[0] || 'teapotapps');
 	const exclude = ['bin', 'node_modules', '.git', 'package-lock.json', 'yarn.lock', '.DS_Store'];
 
 	console.log(`\n🚀 Creating TeapotApp in: ${targetDir}\n`);
@@ -72,10 +72,9 @@ export default async function runCreate(args = []) {
 		const authorName = await askQuestion('\n👤 Author name (optional): ');
 
 		const license = await askQuestion('\n📄 License (default: ISC): ');
-		const authorNameCondition = authorName != '.' || !authorName ? authorName : 'Teapotapps';
 		if (Object.keys(pkg).length) {
 			pkg.name = camelCaseName; // 🆕 Tambah nama dari folder
-			pkg.author = authorNameCondition; // 🆕 Default ke Teapotapps
+			pkg.author = authorName || 'Teapotapps'; // 🆕 Default ke Teapotapps
 			pkg.license = license || 'ISC';
 			await fs.writeJson(pkgPath, pkg, { spaces: 2 });
 			console.log('\n📝 Successfully updated package.json with name, author, and license');
