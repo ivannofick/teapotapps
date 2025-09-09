@@ -36,7 +36,7 @@ const __dirname = path.dirname(__filename);
 
 export default async function runCreate(args = []) {
 	const nameApps = args[0] != '.' || !args[0]  ? args[0] : 'teapotapps';
-	const projectName = appName;
+	const projectName = nameApps;
 	const camelCaseName = toCamelCase(projectName);
 	const templateDir = path.resolve(__dirname, 'app');
 	const targetDir = path.resolve(process.cwd(), projectName);
