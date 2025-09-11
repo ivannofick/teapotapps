@@ -33,9 +33,11 @@
     "help.mjs",
     "helpers.mjs",
     "installDatabase.mjs",
+    "installMailer.mjs",
     "app/index.js",
     "app/package.json",
     "app/env.example",
+    "bundleMailer.mjs",
     "bundleDatabase.mjs",
     "app/src",
     "README.md"
