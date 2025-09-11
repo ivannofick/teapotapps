@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url';
 import { askQuestion, askYesNo, runCommand, startSpinner } from './helpers.mjs';
 import { installDatabases } from './installDatabase.mjs';
 import { installMailer } from './installMailer.mjs';
+import fetch from 'node-fetch';
 
 
 function generateSecret(length = 48) {
@@ -35,7 +36,36 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export default async function runCreate(args = []) {
-	const nameApps = args[0] != '.' || !args[0]  ? args[0] : 'teapotapps';
+	try {
+		const testRes = await fetch('https://raw.githubusercontent.com/');
+		console.log(`
+                         .
+                          \`:.
+                            \`:.
+                    .:'     ,::
+                   .:'      ;:'
+                   ::      ;:'
+                    :    .:'
+                     \`.  :.
+            _________________________
+           : _ _ _ _ _ _ _ _ _ _ _ _ :
+       ,---:".".".".".".".".".".".".":
+      : ,'"\`::.:.:.:.:.:.:.:.:.:.:.::'
+      \`.\`.  \`:-===-===-===-===-===-:'
+        \`.\`-._:                   :
+          \`-.__\`.               ,'
+      ,--------\`"\`-------------'--------.
+       \`"--.__                   __.--"\`
+              \`""-------------""'
+  
+			\n🫖 Your teapot is warm, time to brew your app 🚀
+		`);
+		if (!testRes.ok) throw new Error('❌ Unable to fetch the tea leaves (resources)');
+	} catch (err) {
+		throw new Error('❌ No internet connection — the teapot cannot be brewed!');
+	}
+
+	const nameApps = args[0] != '.' || !args[0] ? args[0] : 'teapotapps';
 	const projectName = nameApps;
 	const camelCaseName = toCamelCase(projectName);
 	const templateDir = path.resolve(__dirname, 'app');
