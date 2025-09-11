@@ -1,10 +1,10 @@
 # Ignore everything
 *
 
-# Tetapi, tidak untuk package.json
+# Don't ignore package.json
 !package.json
 
-# Jangan ignore .gitignore
+# Don't ignore .gitignore
 !.gitignore
-# Jangan ignore .gitignore
+# Don't ignore .README.md
 !README.md
