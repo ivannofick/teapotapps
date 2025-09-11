@@ -1,25 +1,7 @@
 import path from 'path';
 import fs from 'fs/promises';
 import { fileURLToPath } from 'url';
-
-async function copyFolderRecursive(src, dest) {
-    await fs.mkdir(dest, { recursive: true });
-    const entries = await fs.readdir(src, { withFileTypes: true });
-
-    for (const entry of entries) {
-        const srcPath = path.join(src, entry.name);
-        const destPath = path.join(dest, entry.name);
-
-        if (entry.isDirectory()) {
-            await copyFolderRecursive(srcPath, destPath);
-        } else if (entry.isFile()) {
-            await fs.copyFile(srcPath, destPath);
-        } else if (entry.isSymbolicLink()) {
-            const symlink = await fs.readlink(srcPath);
-            await fs.symlink(symlink, destPath);
-        }
-    }
-}
+import fetch from 'node-fetch';
 
 export async function bundleMailer(args = []) {
     try {
@@ -29,24 +11,49 @@ export async function bundleMailer(args = []) {
         const __filename = fileURLToPath(import.meta.url);
         const __dirname = path.dirname(__filename);
 
-        const libsDir = path.join(targetDir, 'src', 'utils');
         const configsDir = path.join(targetDir, 'src', 'configs');
-
-        const libsSourceDir = path.resolve(__dirname, 'templates', 'mailists', 'utils');
-        const configsSourceFile = path.resolve(__dirname, 'templates', 'mailists', 'configs', 'mail.js');
+        const mailDir = path.join(targetDir, 'src', 'utils', 'mail');
+        const templatesDir = path.join(mailDir, 'templates');
 
         const configsDestPath = path.join(configsDir, 'mail.js');
+        const mailerDestPath = path.join(mailDir, 'mailer.js');
+        const welcomeEmailDestPath = path.join(templatesDir, 'generateWelcomeEmail.js');
 
-        await fs.access(libsSourceDir);
-        await fs.access(configsSourceFile);
+        // GitHub raw URLs
+        const configsSourceUrl =
+            'https://raw.githubusercontent.com/teapotapps/project/master/packages/create-teapotapps/templates/mailists/configs/mail.js';
+        const mailerSourceUrl =
+            'https://raw.githubusercontent.com/teapotapps/project/master/packages/create-teapotapps/templates/mailists/utils/mail/mailer.js';
+        const welcomeEmailSourceUrl =
+            'https://raw.githubusercontent.com/teapotapps/project/master/packages/create-teapotapps/templates/mailists/utils/mail/templates/generateWelcomeEmail.js';
 
-        await fs.mkdir(libsDir, { recursive: true });
-        await fs.mkdir(configsDir, { recursive: true });
+        // Helper function
+        async function downloadFile(url, destPath) {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`❌ Failed to fetch file: ${url}`);
+            }
+            const data = await response.text();
+            await fs.mkdir(path.dirname(destPath), { recursive: true });
+            await fs.writeFile(destPath, data);
+        }
 
-        await copyFolderRecursive(libsSourceDir, libsDir);
+        // Check URL availability
+        for (const url of [configsSourceUrl, mailerSourceUrl, welcomeEmailSourceUrl]) {
+            try {
+                const res = await fetch(url);
+                if (!res.ok) throw new Error(`❌ Source file does NOT exist: ${url}`);
+            } catch {
+                throw new Error(`❌ Source file does NOT exist: ${url}`);
+            }
+        }
 
-        await fs.copyFile(configsSourceFile, configsDestPath);
+        // Download files
+        await downloadFile(configsSourceUrl, configsDestPath);
+        await downloadFile(mailerSourceUrl, mailerDestPath);
+        await downloadFile(welcomeEmailSourceUrl, welcomeEmailDestPath);
 
+        console.log('✅ Mailer files cloned and saved successfully!');
     } catch (error) {
         if (error.message?.includes('SIGINT')) {
             console.log('\n❌ Prompt dibatalkan oleh user (Ctrl+C). Keluar...');

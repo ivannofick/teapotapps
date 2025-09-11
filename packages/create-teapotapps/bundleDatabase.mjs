@@ -1,6 +1,7 @@
 import path from 'path';
 import fs from 'fs/promises';
 import { fileURLToPath } from 'url';
+import fetch from 'node-fetch';
 
 export async function bundleDatabase(args = []) {
     try {
@@ -18,28 +19,38 @@ export async function bundleDatabase(args = []) {
         const configsDestPath = path.join(configsDir, 'database.js');
         const modelsDestPath = path.join(modelsDir, 'WellcomeModels.js');
 
-        const libsSourcePath = path.resolve(__dirname, 'templates', 'databases', 'libs', 'DataTypesCustom.js');
-        const configsSourcePath = path.resolve(__dirname, 'templates', 'databases', 'configs', 'database.js');
-        const modelsSourcePath = path.resolve(__dirname, 'templates', 'databases', 'models', 'WellcomeModels.js');
+        // GitHub raw URL untuk file yang ingin diambil
+        const libsSourceUrl = 'https://raw.githubusercontent.com/teapotapps/project/master/packages/create-teapotapps/templates/databases/libs/DataTypesCustom.js';
+        const configsSourceUrl = 'https://raw.githubusercontent.com/teapotapps/project/master/packages/create-teapotapps/templates/databases/configs/database.js';
+        const modelsSourceUrl = 'https://raw.githubusercontent.com/teapotapps/project/master/packages/create-teapotapps/templates/databases/models/WellcomeModels.js';
 
-        for (const file of [libsSourcePath, configsSourcePath, modelsSourcePath]) {
+        // Helper function untuk download file dari GitHub
+        async function downloadFile(url, destPath) {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`❌ Failed to fetch file: ${url}`);
+            }
+            const data = await response.text();
+            await fs.mkdir(path.dirname(destPath), { recursive: true });
+            await fs.writeFile(destPath, data);
+        }
+
+        // Check jika URL source bisa diakses (sebenarnya sudah dilakukan di downloadFile)
+        for (const url of [libsSourceUrl, configsSourceUrl, modelsSourceUrl]) {
             try {
-                await fs.access(file);
+                const res = await fetch(url);
+                if (!res.ok) throw new Error(`❌ Source file does NOT exist: ${url}`);
             } catch {
-                throw new Error(`❌ Source file does NOT exist: ${file}`);
+                throw new Error(`❌ Source file does NOT exist: ${url}`);
             }
         }
 
-        await fs.mkdir(libsDir, { recursive: true });
-        await fs.mkdir(configsDir, { recursive: true });
-        await fs.mkdir(modelsDir, { recursive: true });
+        // Download dan simpan file ke tujuan
+        await downloadFile(libsSourceUrl, libsDestPath);
+        await downloadFile(configsSourceUrl, configsDestPath);
+        await downloadFile(modelsSourceUrl, modelsDestPath);
 
-        await fs.copyFile(libsSourcePath, libsDestPath);
-
-        await fs.copyFile(configsSourcePath, configsDestPath);
-
-        await fs.copyFile(modelsSourcePath, modelsDestPath);
-
+        console.log('✅ Files cloned and saved successfully!');
     } catch (error) {
         if (error.message?.includes('SIGINT')) {
             console.log('\n❌ Prompt dibatalkan oleh user (Ctrl+C). Keluar...');
