@@ -6,8 +6,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Path
+const apps = path.resolve(__dirname, '../packages/app');
 const source = path.resolve(__dirname, '../packages/create-teapotapps');
 const target = path.resolve(__dirname, '../packages/teapotapps');
+
+const targetApp = path.resolve(__dirname, '../packages/teapotapps/app');
+
 
 // Path README dari root
 const readmeSource = path.resolve(__dirname, '../README.md');
@@ -22,5 +26,7 @@ await fs.copy(source, target, {
 
 // Tambahkan README.md ke packages/teapotapps
 await fs.copyFile(readmeSource, readmeTarget);
+
+await fs.copy(apps, targetApp);
 
 console.log('✅ Template copied to CLI for publish (README.md included)');
