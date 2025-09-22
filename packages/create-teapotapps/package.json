@@ -20,7 +20,7 @@
     "url": "git+https://github.com/teapotapps/project.git"
   },
   "author": "ivannofick <ivannofick@gmail.com>",
-  "license": "ISC",
+  "license": "MIT",
   "bin": {
     "create-teapotapps": "./cli.js",
     "teapotapps": "./cli.js"
