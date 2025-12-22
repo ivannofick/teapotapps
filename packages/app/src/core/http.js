@@ -8,7 +8,7 @@ import { fileURLToPath } from 'url';
  * @param {object} props - Props/data to pass to the view component.
  * @returns {Promise<string>} - Minified HTML string.
  */
-async function render(viewName, props = {}) {
+async function render(res, viewName, props = {}) {
     const __dirname = path.dirname(fileURLToPath(import.meta.url));
     const viewsPath = path.resolve(__dirname, '../views');
     function minify(html) {
@@ -22,7 +22,9 @@ async function render(viewName, props = {}) {
     const viewPath = path.join(viewsPath, `${viewName}.js`);
     const { default: ViewComponent } = await import(viewPath);
     const html = ViewComponent(props);
-    return minify(html);
+    console.log("html", html)
+    res.setHeader("Content-Type", "text/html");
+    return res.status(200).send(minify(html));
 }
 
 /**

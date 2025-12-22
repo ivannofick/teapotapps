@@ -1,10 +1,10 @@
-import { controller, render } from "../core/http.js";
+import { render } from "../core/http.js";
 
-const wellcome = async (req, res) => {
-  return await render('Wellcome', { name: 'Ivannofick' });
+export const wellcome = async (req, res) => {
+  return await render(res, 'Wellcome', { name: 'Ivannofick' });
 };
 
-const apiWellcome = async (req, res) => {
+export const apiWellcome = async (req, res) => {
   return {
     data: { 'users': 1 },
     meta: { "saya": 1 },
@@ -15,4 +15,3 @@ const apiWellcome = async (req, res) => {
   };
 };
 
-export default controller({ wellcome, apiWellcome });
