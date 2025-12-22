@@ -43,7 +43,7 @@ export function startSpinner(baseMessage, interval = 300) {
 
         dotCount = dotCount % maxDots + 1;
     }, interval);
-
+    process.stdout.write('\x1B[?25h');
     return spinner;
 }
 

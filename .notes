@@ -7,3 +7,11 @@ packages/teapotapps
 npm publish --access public
 
 done :3
+
+removed test or unlink or reinstall on local
+- which teapotapps
+if any teapotapss on local like 
+/Users/your-username/.nvm/versions/node/v20.19.0/bin/teapotapps
+then you can run "npm rm -g teapotapps"
+make sure not existing teapotapps on /Users/your-username/.nvm/versions/node/v20.19.0/bin/teapotapps
+and then if you want reinstall you can navigate you terminal on directory packages/teapotapps with change name package.json to teapotapps

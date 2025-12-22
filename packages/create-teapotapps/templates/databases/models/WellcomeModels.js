@@ -1,5 +1,5 @@
-import db from "../../configs/Database.js";
-import DataTypesCustom from "../../libs/DataTypesCustom.js";
+import db from "../configs/Database.js";
+import DataTypesCustom from "../libs/DataTypesCustom.js";
 const { TYPES } = DataTypesCustom;
 
 const WellcomeModels = db.define("wellcome", {
