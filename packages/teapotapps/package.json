@@ -1,6 +1,6 @@
 {
-  "name": "teapotapps",
-  "version": "0.0.0-dev.2-ready",
+  "name": "create-teapotapps",
+  "version": "0.0.0-beta.211",
   "type": "module",
   "description": "A CLI tool for bootstrapping full-stack projects using the TeapotApps architecture.",
   "keywords": [
@@ -33,21 +33,24 @@
     "help.mjs",
     "helpers.mjs",
     "installDatabase.mjs",
-    "bundleDatabase.mjs",
-    "bundleMailer.mjs",
     "installMailer.mjs",
     "app/index.js",
     "app/package.json",
     "app/env.example",
+    "bundleMailer.mjs",
+    "bundleDatabase.mjs",
     "app/src",
-    "templates",
     "README.md"
   ],
   "scripts": {
-    "cli": "node cli.js"
+    "cli": "node cli.js",
+    "publishLocal": "node ../../scripts/bundle-template-dev.mjs && npm link",
+    "prepublishOnly": "node ../../scripts/bundle-template-dev.mjs",
+    "postpublish": "rm -rf ./app"
   },
   "dependencies": {
     "fs-extra": "^11.3.0",
-    "inquirer": "^12.7.0"
+    "inquirer": "^12.7.0",
+    "node-fetch": "^3.3.2"
   }
 }
