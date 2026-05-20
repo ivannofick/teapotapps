@@ -1,18 +1,53 @@
-for publish npm
-- run 
-node scripts/bundle-template.mjs
-- navigate to 
-packages/teapotapps
-- run 
-npm publish --access public
+# TeapotApps Development & Publishing Guide
 
-done :3
+## 1. Local Development Setup
+If you modify the primary template in `packages/app`, you must sync the templates to the generator package (`create-teapotapps`) before testing it locally.
 
-removed test or unlink or reinstall on local
-- which teapotapps
-if any teapotapss on local like 
-/Users/your-username/.nvm/versions/node/v20.19.0/bin/teapotapps
-then you can run "npm rm -g teapotapps"
-make sure not exists teapotapps on /Users/your-username/.nvm/versions/node/v20.19.0/bin/teapotapps
-and then if you want reinstall you can navigate you terminal on directory packages/create-teapotapps 
-next step run these command node scripts/bundle-template-dev.mjs
+*   **Step 1: Sync Templates to create-teapotapps**
+    Run this command from the root workspace directory:
+    ```bash
+    node scripts/bundle-template-dev.mjs
+    ```
+*   **Step 2: Link CLI Globally for Local Testing**
+    To make the `teapotapps` CLI command available globally on your local machine:
+    ```bash
+    # Clean up old linked instances if any
+    npm unlink -g teapotapps
+    
+    # Run link from the root workspace directory
+    npm link
+    ```
+
+---
+
+## 2. Testing a Newly Generated Project
+After running `npm link`, navigate to your testing directory (e.g., the `test/` directory) and run the installer command as usual:
+```bash
+cd test
+teapotapps <new_project_name>
+```
+
+---
+
+## 3. Steps to Publish to NPM (Production)
+When you are ready to release the latest version to the public NPM registry:
+
+*   **Step 1: Bundle Production Templates**
+    This command cleans the old `packages/teapotapps` directory, copies the `packages/app` and `packages/create-teapotapps` templates into it, and copies the `README.md` from the root directory:
+    ```bash
+    node scripts/bundle-template.mjs
+    ```
+*   **Step 2: Publish to NPM**
+    Navigate to the target package directory (`packages/teapotapps`) and run publish:
+    ```bash
+    cd packages/teapotapps
+    npm publish --access public
+    ```
+
+---
+
+## 4. Reset / Clean Up Local Links (If Errors Occur)
+If your local CLI conflicts or fails to update correctly:
+*   Check the active binary path: `which teapotapps`
+*   Remove the global link: `npm rm -g teapotapps` or `npm unlink -g teapotapps`
+*   Redo the **Local Development Setup** steps above.
