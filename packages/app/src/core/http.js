@@ -1,5 +1,5 @@
 import path from 'path';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 
 /**
  * Renders a server-side view component as a minified HTML string.
@@ -20,9 +20,8 @@ async function render(res, viewName, props = {}) {
     }
 
     const viewPath = path.join(viewsPath, `${viewName}.js`);
-    const { default: ViewComponent } = await import(viewPath);
+    const { default: ViewComponent } = await import(pathToFileURL(viewPath).href);
     const html = ViewComponent(props);
-    console.log("html", html)
     res.setHeader("Content-Type", "text/html");
     return res.status(200).send(minify(html));
 }

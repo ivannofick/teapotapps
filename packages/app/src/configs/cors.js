@@ -17,7 +17,7 @@ const corsHandler = (customOrigins = []) => {
     return cors({
         origin: [
             ...customOrigins,
-            APP_FRONTEND,
+            globalThis.APP_FRONTEND,
             'http://localhost:3000'
         ].filter(Boolean),
         credentials: true,

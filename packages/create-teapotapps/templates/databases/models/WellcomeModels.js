@@ -1,4 +1,4 @@
-import db from "../configs/Database.js";
+import db from "../configs/database.js";
 import DataTypesCustom from "../libs/DataTypesCustom.js";
 const { TYPES } = DataTypesCustom;
 

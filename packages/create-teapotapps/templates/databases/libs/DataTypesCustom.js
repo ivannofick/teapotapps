@@ -43,15 +43,15 @@ class DataTypesCustom {
         DATE: DataTypes.DATE,
         DATEONLY: DataTypes.DATEONLY,
 
-        JSON: (() => {
-            if (isPostgres || isMySQL || isMariaDB) return DataTypes.JSON;
+        get JSON() {
+            if (isPostgres || isMySQL || isMariaDB || !DB_TYPE) return DataTypes.JSON;
             throw new Error(`JSON type is not supported in ${DB_TYPE}`);
-        })(),
+        },
 
-        JSONB: (() => {
+        get JSONB() {
             if (isPostgres) return DataTypes.JSONB;
             return DataTypes.JSON;
-        })(),
+        },
 
         UUID: DataTypes.UUID,
         UUIDV4: DataTypes.UUIDV4,

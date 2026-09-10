@@ -1,4 +1,4 @@
-import { transporter } from '../../config/mail.js';
+import { transporter } from '../../configs/mail.js';
 
 /**
  * Sends an email using the configured transporter.

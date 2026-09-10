@@ -23,12 +23,13 @@ function generateSecret(length = 48) {
 }
 
 
-function toCamelCase(str) {
+function sanitizePackageName(str = 'teapotapps') {
 	return str
-		.replace(/[-_]+/g, ' ')
-		.replace(/\s(.)/g, (_, group1) => group1.toUpperCase())
-		.replace(/\s/g, '')
-		.replace(/^(.)/, (_, group1) => group1.toLowerCase());
+		.trim()
+		.toLowerCase()
+		.replace(/[\s_]+/g, '-')
+		.replace(/[^a-z0-9-~]/g, '')
+		.replace(/^-+|-+$/g, '') || 'teapotapps';
 }
 
 
@@ -68,13 +69,18 @@ export default async function runCreate(args = []) {
 		console.warn('⚠️  Warning: No internet connection detected. Continuing offline...');
 	}
 
-	const nameApps = args[0] != '.' || !args[0] ? args[0] : 'teapotapps';
-	const projectName = nameApps;
-	const camelCaseName = toCamelCase(projectName);
+	const rawArg = typeof args[0] === 'string' ? args[0].trim() : '';
+	const isCurrentDir = rawArg === '.';
+	const projectName = isCurrentDir
+		? path.basename(process.cwd())
+		: (rawArg || 'teapotapps');
+	const packageName = sanitizePackageName(projectName);
 	const templateDir = (await fs.pathExists(path.resolve(__dirname, 'template')))
 		? path.resolve(__dirname, 'template')
 		: path.resolve(__dirname, 'app');
-	const targetDir = path.resolve(process.cwd(), args[0] || 'teapotapps');
+	const targetDir = isCurrentDir
+		? process.cwd()
+		: path.resolve(process.cwd(), projectName);
 	const exclude = ['bin', 'node_modules', '.git', 'package-lock.json', 'yarn.lock', '.DS_Store'];
 
 	console.log(`\n🚀 Creating TeapotApp in: ${targetDir}\n`);
@@ -115,7 +121,7 @@ export default async function runCreate(args = []) {
 
 		const license = await askQuestion('\n📄 License (default: ISC): ');
 		if (Object.keys(pkg).length) {
-			pkg.name = camelCaseName; // 🆕 Tambah nama dari folder
+			pkg.name = packageName; // 🆕 Nama valid sesuai aturan NPM
 			pkg.author = authorName || 'Teapotapps'; // 🆕 Default ke Teapotapps
 			pkg.license = license || 'ISC';
 			await fs.writeJson(pkgPath, pkg, { spaces: 2 });
@@ -128,7 +134,7 @@ export default async function runCreate(args = []) {
 			const key = generateSecret(45);
 
 			envContent = envContent
-				.replace(/^APP_NAME=.*$/m, `APP_NAME=${nameApps}`)
+				.replace(/^APP_NAME=.*$/m, `APP_NAME=${projectName}`)
 				.replace(/^APP_ACCESS_TOKEN_SECRET=.*$/m, `APP_ACCESS_TOKEN_SECRET='${accessTokenSecret}'`)
 				.replace(/^APP_HOST=.*$/m, `APP_HOST='0.0.0.0'`)
 				.replace(/^APP_PORT=.*$/m, `APP_PORT=3010`)
@@ -151,20 +157,22 @@ export default async function runCreate(args = []) {
 			'\n❓ Do you want to install all packages?'
 		);
 
+		const subArgs = [isCurrentDir ? '.' : projectName];
+
 		if (installAll === 'y') {
-			await installMailer(args)
-			await installDatabases(args)
+			await installMailer(subArgs);
+			await installDatabases(subArgs);
 		} else if (installAll === "n") {
 
 			const installDatabase = await askYesNo('\n📦 Do you want to be install database?:');
 
 			if (installDatabase === 'y') {
-				await installDatabases(args)
+				await installDatabases(subArgs);
 			}
 			const askMailer = await askYesNo('\n📦 Would you like to install the mailer?:');
 
 			if (askMailer === 'y') {
-				await installMailer(args)
+				await installMailer(subArgs);
 
 			}
 		}
@@ -174,7 +182,9 @@ export default async function runCreate(args = []) {
 		process.stdout.write('\r✅ Dependencies installed successfully!\n');
 
 		console.log('\n🎉 All set!');
-		console.log(`👉  cd ${projectName}`);
+		if (!isCurrentDir) {
+			console.log(`👉  cd ${projectName}`);
+		}
 		console.log('👉  npm run dev\n');
 		console.log('👉  http://localhost:3010\n');
 
