@@ -28,6 +28,7 @@
   "files": [
     "cli.js",
     "create.mjs",
+    "brew.mjs",
     "dev.mjs",
     "generate.mjs",
     "help.mjs",

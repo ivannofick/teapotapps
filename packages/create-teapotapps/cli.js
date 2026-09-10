@@ -19,7 +19,7 @@ if (args.includes('--version') || args.includes('-v')) {
   process.exit(0);
 }
 
-const knownCommands = ['create', 'help', 'dev', 'generate'];
+const knownCommands = ['create', 'help', 'dev', 'generate', 'brew'];
 const [firstArg, ...restArgs] = args;
 
 let cmd = 'create';
