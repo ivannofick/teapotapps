@@ -36,9 +36,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export default async function runCreate(args = []) {
-	try {
-		const testRes = await fetch('https://raw.githubusercontent.com/');
-		console.log(`
+	console.log(`
                          .
                           \`:.
                             \`:.
@@ -59,16 +57,23 @@ export default async function runCreate(args = []) {
               \`""-------------""'
   
 			\n🫖 Your teapot is warm, time to brew your app 🚀
-		`);
-		if (!testRes.ok) throw new Error('❌ Unable to fetch the tea leaves (resources)');
-	} catch (err) {
-		throw new Error('❌ No internet connection — the teapot cannot be brewed!');
+	`);
+
+	try {
+		const testRes = await fetch('https://registry.npmjs.org', { signal: AbortSignal.timeout(3000) });
+		if (!testRes.ok) {
+			console.warn('⚠️  Warning: Unable to reach npm registry. Offline mode will be used.');
+		}
+	} catch {
+		console.warn('⚠️  Warning: No internet connection detected. Continuing offline...');
 	}
 
 	const nameApps = args[0] != '.' || !args[0] ? args[0] : 'teapotapps';
 	const projectName = nameApps;
 	const camelCaseName = toCamelCase(projectName);
-	const templateDir = path.resolve(__dirname, 'app');
+	const templateDir = (await fs.pathExists(path.resolve(__dirname, 'template')))
+		? path.resolve(__dirname, 'template')
+		: path.resolve(__dirname, 'app');
 	const targetDir = path.resolve(process.cwd(), args[0] || 'teapotapps');
 	const exclude = ['bin', 'node_modules', '.git', 'package-lock.json', 'yarn.lock', '.DS_Store'];
 
@@ -82,6 +87,13 @@ export default async function runCreate(args = []) {
 				return !exclude.some(name => relative === name || relative.startsWith(`${name}/`));
 			}
 		});
+
+		// Rename _gitignore to .gitignore
+		const bundledGitignore = path.join(targetDir, '_gitignore');
+		const targetGitignore = path.join(targetDir, '.gitignore');
+		if (await fs.pathExists(bundledGitignore)) {
+			await fs.move(bundledGitignore, targetGitignore, { overwrite: true });
+		}
 
 		console.log('\n✅ Project generated successfully!');
 
@@ -164,7 +176,7 @@ export default async function runCreate(args = []) {
 		console.log('\n🎉 All set!');
 		console.log(`👉  cd ${projectName}`);
 		console.log('👉  npm run dev\n');
-		console.log('👉  http://localhost:3000\n');
+		console.log('👉  http://localhost:3010\n');
 
 	} catch (err) {
 		console.error('❌ Failed to create project:', err);

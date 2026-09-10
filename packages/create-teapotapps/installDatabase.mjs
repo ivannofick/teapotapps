@@ -9,7 +9,7 @@ export async function installDatabases(args = []) {
         const projectName = args[0] || 'teapotapps';
         const targetDir = path.resolve(process.cwd(), projectName);
         const sequelizeSpinner = startSpinner('\n🛠️ Installing sequelize');
-        addDependency(targetDir, 'sequelize', '^6.37.7')
+        await addDependency(targetDir, 'sequelize', '^6.37.7');
         clearInterval(sequelizeSpinner);
         process.stdout.write('\r✅ Sequelize installed successfully!\n');
 

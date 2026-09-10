@@ -11,7 +11,8 @@
   },
   "scripts": {
     "dev": "yarn workspace @teapotapps/app run dev",
-    "cli": "yarn workspace create-teapotapps run cli"
+    "cli": "yarn workspace create-teapotapps run cli",
+    "release": "node scripts/release.mjs"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
