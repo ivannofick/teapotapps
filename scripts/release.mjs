@@ -28,8 +28,25 @@ function parseSemver(version) {
   return { major: major || 0, minor: minor || 0, patch: patch || 0 };
 }
 
+async function checkNpmAuth() {
+  try {
+    const user = execSync('npm whoami', { encoding: 'utf8' }).trim();
+    console.log(`👤 Logged in to NPM as: ${user}\n`);
+    return user;
+  } catch {
+    console.error('❌ NPM Authentication Error: You are not logged in to NPM (or session expired).');
+    console.error('👉 Please run "npm login" in your terminal first before publishing.\n');
+    return null;
+  }
+}
+
 async function main() {
   console.log('🫖 TeapotApps Dual-Release Pipeline (create-teapotapps & teapotapps)\n');
+
+  const npmUser = await checkNpmAuth();
+  if (!npmUser) {
+    process.exit(1);
+  }
 
   if (!await fs.pathExists(pkgPath)) {
     console.error(`❌ package.json not found at: ${pkgPath}`);
@@ -49,21 +66,15 @@ async function main() {
   console.log(`  1) Patch:       ${nextPatch}`);
   console.log(`  2) Minor:       ${nextMinor}`);
   console.log(`  3) Prerelease:  ${nextDev}`);
-  console.log(`  4) Custom version\n`);
+  console.log(`  Or type any custom version directly (e.g. 0.0.0-dev.6)\n`);
 
-  const choice = await askQuestion('Select version option [1/2/3/4] (default: 1): ');
+  const choice = await askQuestion('Select option [1/2/3] or type version directly (default: 1): ');
 
   let newVersion = nextPatch;
-  if (choice === '2') newVersion = nextMinor;
+  if (choice === '1' || choice === '') newVersion = nextPatch;
+  else if (choice === '2') newVersion = nextMinor;
   else if (choice === '3') newVersion = nextDev;
-  else if (choice === '4') {
-    const custom = await askQuestion('Enter custom version: ');
-    if (!custom) {
-      console.error('❌ Version cannot be empty');
-      process.exit(1);
-    }
-    newVersion = custom;
-  }
+  else if (choice) newVersion = choice; // If user types "0.0.0-dev.6" or custom version directly
 
   // Bundle app template first
   console.log('\n📦 Bundling app template...');
