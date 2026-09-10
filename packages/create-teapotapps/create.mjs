@@ -1,9 +1,10 @@
 import fs from 'fs-extra';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { askQuestion, askYesNo, runCommand, startSpinner } from './helpers.mjs';
-import { installDatabases } from './installDatabase.mjs';
+import { askQuestion, runCommand, startSpinner } from './helpers.mjs';
+import { installDatabases, DB_CONFIGS } from './installDatabase.mjs';
 import { installMailer } from './installMailer.mjs';
+import inquirer from 'inquirer';
 import fetch from 'node-fetch';
 
 
@@ -118,8 +119,56 @@ export default async function runCreate(args = []) {
 		}
 
 		const authorName = await askQuestion('\n👤 Author name (optional): ');
+		const license = await askQuestion('📄 License (default: ISC): ');
 
-		const license = await askQuestion('\n📄 License (default: ISC): ');
+		const { selectedFeatures } = await inquirer.prompt([
+			{
+				type: 'checkbox',
+				name: 'selectedFeatures',
+				message: '📦 Select features and configurations to include:',
+				choices: [
+					{
+						name: '[All Packages]  : Everything (Database + Mailer)',
+						value: 'all'
+					},
+					{
+						name: 'Database        : Sequelize ORM (PostgreSQL / MySQL / MariaDB)',
+						value: 'database'
+					},
+					{
+						name: 'Mailer          : Nodemailer email service',
+						value: 'mailer'
+					},
+					{
+						name: 'Vercel Ready    : Serverless configuration (vercel.json)',
+						value: 'vercel'
+					}
+				]
+			}
+		]);
+
+		const wantAll = selectedFeatures.includes('all');
+		const wantDatabase = wantAll || selectedFeatures.includes('database');
+		const wantMailer = wantAll || selectedFeatures.includes('mailer');
+		const wantVercel = selectedFeatures.includes('vercel');
+
+		let chosenDbEngine = null;
+		if (wantDatabase) {
+			const { dbEngine } = await inquirer.prompt([
+				{
+					type: 'list',
+					name: 'dbEngine',
+					message: '🗄️  Which database engine do you want to use?',
+					choices: [
+						{ name: 'PostgreSQL (pg + pg-hstore)', value: 'postgresql' },
+						{ name: 'MySQL (mysql2)', value: 'mysql' },
+						{ name: 'MariaDB (mariadb)', value: 'mariadb' }
+					]
+				}
+			]);
+			chosenDbEngine = dbEngine;
+		}
+
 		if (Object.keys(pkg).length) {
 			pkg.name = packageName; // 🆕 Nama valid sesuai aturan NPM
 			pkg.author = authorName || 'Teapotapps'; // 🆕 Default ke Teapotapps
@@ -133,12 +182,21 @@ export default async function runCreate(args = []) {
 			const accessTokenSecret = generateSecret(45);
 			const key = generateSecret(45);
 
+			const dbConnection = (chosenDbEngine && DB_CONFIGS[chosenDbEngine])
+				? DB_CONFIGS[chosenDbEngine].connection
+				: '';
+			const dbPort = (chosenDbEngine && DB_CONFIGS[chosenDbEngine])
+				? DB_CONFIGS[chosenDbEngine].port
+				: '';
+
 			envContent = envContent
 				.replace(/^APP_NAME=.*$/m, `APP_NAME=${projectName}`)
 				.replace(/^APP_ACCESS_TOKEN_SECRET=.*$/m, `APP_ACCESS_TOKEN_SECRET='${accessTokenSecret}'`)
 				.replace(/^APP_HOST=.*$/m, `APP_HOST='0.0.0.0'`)
 				.replace(/^APP_PORT=.*$/m, `APP_PORT=3010`)
-				.replace(/^APP_KEY=.*$/m, `APP_KEY='${key}'`);
+				.replace(/^APP_KEY=.*$/m, `APP_KEY='${key}'`)
+				.replace(/^APP_DB_CONNECTION=.*$/m, `APP_DB_CONNECTION=${dbConnection}`)
+				.replace(/^APP_DB_PORT=.*$/m, `APP_DB_PORT=${dbPort}`);
 
 			await fs.writeFile(envPath, envContent);
 			console.log('\n📄 .env file generated successfully');
@@ -146,36 +204,37 @@ export default async function runCreate(args = []) {
 			console.warn('\n⚠️  .env cannot be generated');
 		}
 
-
-		const packages = [
-			'nodemailer',
-			'postgresql',
-		];
-		const installAll = await askYesNo(
-			'\n📦 Packages to be installed:\n' +
-			packages.map(pkg => `  • ${pkg}`).join('\n') +
-			'\n❓ Do you want to install all packages?'
-		);
-
 		const subArgs = [isCurrentDir ? '.' : projectName];
 
-		if (installAll === 'y') {
-			await installMailer(subArgs);
-			await installDatabases(subArgs);
-		} else if (installAll === "n") {
-
-			const installDatabase = await askYesNo('\n📦 Do you want to be install database?:');
-
-			if (installDatabase === 'y') {
-				await installDatabases(subArgs);
-			}
-			const askMailer = await askYesNo('\n📦 Would you like to install the mailer?:');
-
-			if (askMailer === 'y') {
-				await installMailer(subArgs);
-
-			}
+		if (wantDatabase && chosenDbEngine) {
+			await installDatabases(subArgs, chosenDbEngine);
 		}
+
+		if (wantMailer) {
+			await installMailer(subArgs);
+		}
+
+		if (wantVercel) {
+			const vercelConfig = {
+				version: 2,
+				builds: [
+					{
+						src: "index.js",
+						use: "@vercel/node"
+					}
+				],
+				routes: [
+					{
+						src: "/(.*)",
+						dest: "index.js"
+					}
+				]
+			};
+			const vercelPath = path.join(targetDir, 'vercel.json');
+			await fs.writeJson(vercelPath, vercelConfig, { spaces: 2 });
+			console.log('\n▲ Generated vercel.json for Vercel deployment');
+		}
+
 		const spinner = startSpinner('\n📦 Installing dependencies');
 		await runCommand('npm', ['install'], targetDir);
 		clearInterval(spinner);
@@ -185,10 +244,22 @@ export default async function runCreate(args = []) {
 		if (!isCurrentDir) {
 			console.log(`👉  cd ${projectName}`);
 		}
-		console.log('👉  npm run dev\n');
+		console.log('👉  npm run dev');
 		console.log('👉  http://localhost:3010\n');
 
+		if (wantVercel) {
+			console.log('▲ Vercel deployment:');
+			console.log('👉  npx vercel\n');
+			if (wantDatabase) {
+				console.log('💡 Tip: For serverless deployment on Vercel with database, use a cloud database provider with connection pooling (e.g. Supabase, Neon, or PlanetScale).\n');
+			}
+		}
+
 	} catch (err) {
+		if (err.name === 'ExitPromptError' || err.message?.includes('SIGINT') || err.message?.includes('force closed')) {
+			console.log('\n❌ Setup cancelled by user. Exiting...');
+			process.exit(0);
+		}
 		console.error('❌ Failed to create project:', err);
 		process.exit(1);
 	}
