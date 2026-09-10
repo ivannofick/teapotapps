@@ -6,7 +6,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const appSource = path.resolve(__dirname, '../packages/app');
-const targetTemplate = path.resolve(__dirname, '../packages/create-teapotapps/template');
+const targetTemplate = path.resolve(__dirname, '../packages/create-teapotapps/templates/base');
 const readmeSource = path.resolve(__dirname, '../README.md');
 const readmeTarget = path.resolve(__dirname, '../packages/create-teapotapps/README.md');
 
@@ -39,4 +39,4 @@ if (await fs.pathExists(readmeSource)) {
   await fs.copyFile(readmeSource, readmeTarget);
 }
 
-console.log('✅ App template successfully bundled into packages/create-teapotapps/template');
+console.log('✅ App template successfully bundled into packages/create-teapotapps/templates/base');

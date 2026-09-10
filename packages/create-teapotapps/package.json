@@ -37,7 +37,6 @@
     "installMailer.mjs",
     "bundleMailer.mjs",
     "bundleDatabase.mjs",
-    "template",
     "templates",
     "README.md"
   ],

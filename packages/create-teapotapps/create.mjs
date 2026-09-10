@@ -75,9 +75,9 @@ export default async function runCreate(args = []) {
 		? path.basename(process.cwd())
 		: (rawArg || 'teapotapps');
 	const packageName = sanitizePackageName(projectName);
-	const templateDir = (await fs.pathExists(path.resolve(__dirname, 'template')))
-		? path.resolve(__dirname, 'template')
-		: path.resolve(__dirname, 'app');
+	const templateDir = (await fs.pathExists(path.resolve(__dirname, 'templates', 'base')))
+		? path.resolve(__dirname, 'templates', 'base')
+		: path.resolve(__dirname, '../app');
 	const targetDir = isCurrentDir
 		? process.cwd()
 		: path.resolve(process.cwd(), projectName);

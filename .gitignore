@@ -4,6 +4,5 @@ package-lock.json
 .DS_Store
 
 # CLI bundled template outputs
-packages/create-teapotapps/template/
-packages/create-teapotapps/app/
+packages/create-teapotapps/templates/base/
 packages/teapotapps/

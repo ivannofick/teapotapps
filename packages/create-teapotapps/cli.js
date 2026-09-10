@@ -25,7 +25,10 @@ const [firstArg, ...restArgs] = args;
 let cmd = 'create';
 let cmdArgs = args;
 
-if (knownCommands.includes(firstArg)) {
+if (args.includes('--help') || args.includes('-h')) {
+  cmd = 'help';
+  cmdArgs = [];
+} else if (knownCommands.includes(firstArg)) {
   cmd = firstArg;
   cmdArgs = restArgs;
 }

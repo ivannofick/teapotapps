@@ -20,7 +20,7 @@ export async function bundleDatabase(args = []) {
             path.join(targetDir, 'src', 'configs')
         );
 
-        // Salin seluruh isi folder libs dari templates/databases ke target src/libs (termasuk DataTypesCustom.js, JwtHandlers.js, RestApiHandler.js, WithTransaction.js)
+        // Salin seluruh isi folder libs dari templates/databases ke target src/libs (DataTypesCustom.js, WithTransaction.js)
         await fs.copy(
             path.join(localDbTemplates, 'libs'),
             path.join(targetDir, 'src', 'libs')
