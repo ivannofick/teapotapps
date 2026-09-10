@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url';
 import { askQuestion, runCommand, startSpinner } from './helpers.mjs';
 import { installDatabases, DB_CONFIGS } from './installDatabase.mjs';
 import { installMailer } from './installMailer.mjs';
+import { startBoilingLoader } from './loading.mjs';
 import inquirer from 'inquirer';
 import fetch from 'node-fetch';
 
@@ -235,10 +236,9 @@ export default async function runCreate(args = []) {
 			console.log('\n▲ Generated vercel.json for Vercel deployment');
 		}
 
-		const spinner = startSpinner('\n📦 Installing dependencies');
+		const boilingLoader = startBoilingLoader('🫖 Boiling water and brewing your dependencies...');
 		await runCommand('npm', ['install'], targetDir);
-		clearInterval(spinner);
-		process.stdout.write('\r✅ Dependencies installed successfully!\n');
+		boilingLoader.stop('✅ Dependencies installed successfully!');
 
 		console.log('\n🎉 All set!');
 		if (!isCurrentDir) {

@@ -13,7 +13,7 @@ TeapotApps is a lightweight Node.js framework built with ECMAScript Modules (ESM
 - Modular layout: controllers, routes, middlewares, services, and views
 - Route grouping support
 - Built-in CORS and request logging
-- PostgreSQL and Nodemailer scaffolding options
+- PostgreSQL, MySQL, MariaDB, Nodemailer, and Vercel scaffolding options
 - Ready-to-use development server on port 3010
 
 ---
@@ -42,6 +42,14 @@ teapotapps create my-app
 ```
 
 *(You can also use `create-teapotapps my-app` or `teapotapps my-app`)*
+
+### Checking CLI Help & Options
+
+To inspect all available commands and generator options:
+
+```bash
+npx create-teapotapps --help
+```
 
 ---
 
