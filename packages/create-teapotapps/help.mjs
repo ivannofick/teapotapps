@@ -28,8 +28,9 @@ export default async function () {
       teapotapps dev                     Start the development server
       teapotapps brew controller <name>  Scaffold a new controller
       teapotapps brew model <name>       Scaffold a new Sequelize model
+      teapotapps brew service <name>     Scaffold a new service
       teapotapps brew middleware <name>  Scaffold a new middleware
-      teapotapps brew api <name>         Scaffold controller + model + route
+      teapotapps brew api <name>         Scaffold controller + model + route (active CRUD)
       teapotapps generate <KEY>          Generate a secret for a specific key in .env
       teapotapps generate ALL            Create or update .env with default values
       teapotapps help                    Show this help message
