@@ -1,6 +1,6 @@
 {
   "name": "teapotapps",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "type": "module",
   "description": "The official runtime framework for TeapotApps.",
   "main": "./index.js",

@@ -1,6 +1,6 @@
 {
   "name": "teapotapps-project",
-  "version": "0.0.1-beta",
+  "version": "1.0.4",
   "private": true,
   "license": "MIT",
   "workspaces": [
