@@ -1,5 +1,5 @@
 import db from "../configs/database.js";
-import { responseApi } from "./RestApiHandler.js";
+import { responseApi } from "teapotapps";
 
 export const withTransaction = (fn, useTransaction = true) => {
     return async (req, res) => {
