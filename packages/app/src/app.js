@@ -4,7 +4,7 @@ import api from "./routes/api.js";
 import web from "./routes/web.js";
 import corsHandler from "./configs/cors.js";
 import './configs/env.js';
-import { logger } from "./core/middleware.js";
+import { logger, defaultErrorHandler } from "teapotapps";
 
 const app = express();
 app.use(corsHandler());
@@ -23,20 +23,6 @@ app.use(api);
 app.use(web);
 
 // Global error handler
-app.use((err, req, res, next) => {
-    console.error("Unhandled Error:", err);
-    if (res.headersSent) {
-        return next(err);
-    }
-    const statusCode = err.status || err.statusCode || 500;
-    return res.status(statusCode).json({
-        data: null,
-        meta: null,
-        status: {
-            code: statusCode,
-            message_client: err.message || "Internal server error"
-        }
-    });
-});
+app.use(defaultErrorHandler);
 
 export default app;

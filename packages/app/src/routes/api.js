@@ -1,8 +1,8 @@
-import { Router } from 'express'
-const router = Router()
-import * as WelcomeController from '../controllers/WelcomeController.js'
-import { verifyToken } from '../middlewares/verifyToken.js'
-import { routeGroup } from '../core/routeGroup.js'
+import { Router } from 'express';
+import { routeGroup, verifyToken } from 'teapotapps';
+import * as WelcomeController from '../controllers/WelcomeController.js';
+
+const router = Router();
 
 // Public API routes
 router.get('/api/wellcome', WelcomeController.apiWellcome);

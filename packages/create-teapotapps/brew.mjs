@@ -83,7 +83,7 @@ async function brewController(projectDir, baseName, withModel = false) {
     let content = '';
 
     if (withModel) {
-        content = `import { responseApi } from "../libs/RestApiHandler.js";
+        content = `import { responseApi } from "teapotapps";
 import ${baseName}Models from "../models/${baseName}Models.js";
 
 export const getAll = async (req, res) => {
@@ -144,7 +144,7 @@ export const remove = async (req, res) => {
 };
 `;
     } else {
-        content = `import { responseApi } from "../libs/RestApiHandler.js";
+        content = `import { responseApi } from "teapotapps";
 
 export const getAll = async (req, res) => {
     return responseApi(res, [], null, "${baseName} list retrieved successfully");

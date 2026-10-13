@@ -7,7 +7,15 @@ import { execSync } from 'child_process';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '..');
-const pkgPath = path.join(rootDir, 'packages/create-teapotapps/package.json');
+
+const runtimePkgDir = path.join(rootDir, 'packages/teapotapps');
+const runtimePkgPath = path.join(runtimePkgDir, 'package.json');
+
+const cliPkgDir = path.join(rootDir, 'packages/create-teapotapps');
+const cliPkgPath = path.join(cliPkgDir, 'package.json');
+
+const appPkgPath = path.join(rootDir, 'packages/app/package.json');
+const rootPkgPath = path.join(rootDir, 'package.json');
 
 function askQuestion(query) {
   const rl = readline.createInterface({
@@ -40,21 +48,52 @@ async function checkNpmAuth() {
   }
 }
 
+async function updateVersions(newVersion) {
+  // 1. Runtime framework package
+  if (await fs.pathExists(runtimePkgPath)) {
+    const runtimePkg = await fs.readJson(runtimePkgPath);
+    runtimePkg.version = newVersion;
+    await fs.writeJson(runtimePkgPath, runtimePkg, { spaces: 2 });
+  }
+
+  // 2. CLI scaffolder package
+  if (await fs.pathExists(cliPkgPath)) {
+    const cliPkg = await fs.readJson(cliPkgPath);
+    cliPkg.version = newVersion;
+    await fs.writeJson(cliPkgPath, cliPkg, { spaces: 2 });
+  }
+
+  // 3. Template package (update teapotapps dependency)
+  if (await fs.pathExists(appPkgPath)) {
+    const appPkg = await fs.readJson(appPkgPath);
+    if (!appPkg.dependencies) appPkg.dependencies = {};
+    appPkg.dependencies['teapotapps'] = `^${newVersion}`;
+    await fs.writeJson(appPkgPath, appPkg, { spaces: 2 });
+  }
+
+  // 4. Workspace root package
+  if (await fs.pathExists(rootPkgPath)) {
+    const rootPkg = await fs.readJson(rootPkgPath);
+    rootPkg.version = newVersion;
+    await fs.writeJson(rootPkgPath, rootPkg, { spaces: 2 });
+  }
+}
+
 async function main() {
-  console.log('🫖 TeapotApps Dual-Release Pipeline (create-teapotapps & teapotapps)\n');
+  console.log('🫖 TeapotApps One-Command Release Pipeline\n');
+  console.log('Synchronizing:');
+  console.log('  • Runtime Framework : packages/teapotapps');
+  console.log('  • CLI Scaffolder    : packages/create-teapotapps');
+  console.log('  • Starter Template  : packages/app\n');
 
   const npmUser = await checkNpmAuth();
   if (!npmUser) {
     process.exit(1);
   }
 
-  if (!await fs.pathExists(pkgPath)) {
-    console.error(`❌ package.json not found at: ${pkgPath}`);
-    process.exit(1);
-  }
-
-  const pkg = await fs.readJson(pkgPath);
-  const currentVersion = pkg.version;
+  const basePkgPath = (await fs.pathExists(runtimePkgPath)) ? runtimePkgPath : cliPkgPath;
+  const basePkg = await fs.readJson(basePkgPath);
+  const currentVersion = basePkg.version || '1.0.3';
   const { major, minor, patch } = parseSemver(currentVersion);
 
   const nextPatch = `${major}.${minor}.${patch + 1}`;
@@ -66,7 +105,7 @@ async function main() {
   console.log(`  1) Patch:       ${nextPatch}`);
   console.log(`  2) Minor:       ${nextMinor}`);
   console.log(`  3) Prerelease:  ${nextDev}`);
-  console.log(`  Or type any custom version directly (e.g. 0.0.0-dev.6)\n`);
+  console.log(`  Or type any custom version directly (e.g. 1.0.4-beta.1)\n`);
 
   const choice = await askQuestion('Select option [1/2/3] or type version directly (default: 1): ');
 
@@ -74,55 +113,41 @@ async function main() {
   if (choice === '1' || choice === '') newVersion = nextPatch;
   else if (choice === '2') newVersion = nextMinor;
   else if (choice === '3') newVersion = nextDev;
-  else if (choice) newVersion = choice; // If user types "0.0.0-dev.6" or custom version directly
+  else if (choice) newVersion = choice;
 
-  // Bundle app template first
+  console.log(`\n📝 Updating versions across all packages to ${newVersion}...`);
+  await updateVersions(newVersion);
+
+  // Bundle app template with new versions
   console.log('\n📦 Bundling app template...');
   execSync('node scripts/bundle-template.mjs', { cwd: rootDir, stdio: 'inherit' });
 
   const confirmPublish = await askQuestion(
-    `\n🚀 Ready to publish BOTH 'create-teapotapps@${newVersion}' and 'teapotapps@${newVersion}' to NPM? (y/n): `
+    `\n🚀 Ready to publish BOTH 'teapotapps@${newVersion}' (runtime) and 'create-teapotapps@${newVersion}' (CLI) to NPM? (y/n): `
   );
 
   if (confirmPublish.toLowerCase() === 'y') {
-    const pkgDir = path.join(rootDir, 'packages/create-teapotapps');
-
     try {
-      // 1. Publish create-teapotapps
-      console.log(`\n📡 [1/2] Publishing 'create-teapotapps@${newVersion}'...`);
-      pkg.name = 'create-teapotapps';
-      pkg.version = newVersion;
-      await fs.writeJson(pkgPath, pkg, { spaces: 2 });
-      execSync('npm publish --access public', { cwd: pkgDir, stdio: 'inherit' });
-      console.log(`✅ Published create-teapotapps@${newVersion}`);
+      // 1. Publish runtime package first so CLI dependencies resolve cleanly
+      console.log(`\n📡 [1/2] Publishing runtime framework 'teapotapps@${newVersion}'...`);
+      execSync('npm publish --access public', { cwd: runtimePkgDir, stdio: 'inherit' });
+      console.log(`✅ Successfully published teapotapps@${newVersion}`);
 
-      // 2. Publish teapotapps
-      console.log(`\n📡 [2/2] Publishing 'teapotapps@${newVersion}'...`);
-      pkg.name = 'teapotapps';
-      pkg.version = newVersion;
-      await fs.writeJson(pkgPath, pkg, { spaces: 2 });
-      execSync('npm publish --access public', { cwd: pkgDir, stdio: 'inherit' });
-      console.log(`✅ Published teapotapps@${newVersion}`);
+      // 2. Publish CLI package
+      console.log(`\n📡 [2/2] Publishing CLI scaffolder 'create-teapotapps@${newVersion}'...`);
+      execSync('npm publish --access public', { cwd: cliPkgDir, stdio: 'inherit' });
+      console.log(`✅ Successfully published create-teapotapps@${newVersion}`);
 
-      // Restore default name back to create-teapotapps
-      pkg.name = 'create-teapotapps';
-      await fs.writeJson(pkgPath, pkg, { spaces: 2 });
-
-      console.log(`\n🎉 SUCCESS! Both packages are now live with synchronized version ${newVersion}:`);
-      console.log(`  • npm create teapotapps@latest my-app`);
-      console.log(`  • npx create-teapotapps my-app`);
-      console.log(`  • teapotapps create my-app (npm i -g teapotapps)`);
-      console.log(`  • npx teapotapps create my-app\n`);
+      console.log(`\n🎉 SUCCESS! All packages live with synchronized version ${newVersion}:`);
+      console.log(`  • Framework Runtime : npm install teapotapps@latest`);
+      console.log(`  • Starter Scaffolder: npm create teapotapps@latest my-app`);
+      console.log(`  • Direct NPX Runner : npx create-teapotapps my-app\n`);
     } catch (err) {
-      // Ensure restored even on error
-      pkg.name = 'create-teapotapps';
-      await fs.writeJson(pkgPath, pkg, { spaces: 2 });
-      console.error('\n❌ Publish failed:', err.message);
+      console.error('\n❌ Publish error encountered:', err.message);
+      process.exit(1);
     }
   } else {
-    pkg.version = newVersion;
-    await fs.writeJson(pkgPath, pkg, { spaces: 2 });
-    console.log(`\n⚠️  Publish skipped. Package version was updated to ${newVersion} locally.`);
+    console.log(`\n⚠️  Publish skipped. Package versions updated to ${newVersion} locally.`);
   }
 }
 

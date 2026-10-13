@@ -9,8 +9,9 @@ import { fileURLToPath, pathToFileURL } from 'url';
  * @returns {Promise<string>} - Minified HTML string.
  */
 async function render(res, viewName, props = {}) {
-    const __dirname = path.dirname(fileURLToPath(import.meta.url));
-    const viewsPath = path.resolve(__dirname, '../views');
+    const defaultSrcViews = path.resolve(process.cwd(), 'src/views');
+    const defaultViews = path.resolve(process.cwd(), 'views');
+    const viewsPath = props.viewsDir || defaultSrcViews;
     function minify(html) {
         return html
             .replace(/\n/g, '')

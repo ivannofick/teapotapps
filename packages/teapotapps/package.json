@@ -1,0 +1,39 @@
+{
+  "name": "teapotapps",
+  "version": "1.0.3",
+  "type": "module",
+  "description": "The official runtime framework for TeapotApps.",
+  "main": "./index.js",
+  "exports": {
+    ".": "./index.js"
+  },
+  "keywords": [
+    "teapotapps",
+    "framework",
+    "express",
+    "rest-api",
+    "backend"
+  ],
+  "homepage": "https://github.com/teapotapps/project#readme",
+  "bugs": {
+    "url": "https://github.com/teapotapps/project/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/teapotapps/project.git"
+  },
+  "author": "ivannofick <ivannofick@gmail.com>",
+  "license": "MIT",
+  "files": [
+    "index.js",
+    "src",
+    "README.md"
+  ],
+  "dependencies": {
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "peerDependencies": {
+    "express": ">=4.0.0"
+  }
+}

@@ -174,8 +174,23 @@ export default async function runCreate(args = []) {
 			pkg.name = packageName; // 🆕 Nama valid sesuai aturan NPM
 			pkg.author = authorName || 'Teapotapps'; // 🆕 Default ke Teapotapps
 			pkg.license = license || 'ISC';
+
+			const cliPkgPath = path.join(__dirname, 'package.json');
+			let frameworkVersion = '^1.0.3';
+			try {
+				if (await fs.pathExists(cliPkgPath)) {
+					const cliPkg = await fs.readJson(cliPkgPath);
+					if (cliPkg.version) {
+						frameworkVersion = `^${cliPkg.version}`;
+					}
+				}
+			} catch {}
+
+			pkg.dependencies = pkg.dependencies || {};
+			pkg.dependencies['teapotapps'] = pkg.dependencies['teapotapps'] || frameworkVersion;
+
 			await fs.writeJson(pkgPath, pkg, { spaces: 2 });
-			console.log('\n📝 Successfully updated package.json with name, author, and license');
+			console.log('\n📝 Successfully updated package.json with name, author, license, and teapotapps framework');
 		}
 
 		if (await fs.pathExists(envExamplePath)) {

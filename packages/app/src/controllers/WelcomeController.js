@@ -1,5 +1,4 @@
-import { render } from "../core/http.js";
-import { responseApi } from "../libs/RestApiHandler.js";
+import { render, responseApi } from "teapotapps";
 
 export const wellcome = async (req, res) => {
   return await render(res, 'Wellcome', { name: 'Ivannofick' });
