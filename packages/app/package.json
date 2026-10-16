@@ -7,7 +7,7 @@
     "dev": "node --watch index.js"
   },
   "dependencies": {
-    "teapotapps": "^1.0.5",
+    "teapotapps": "^1.0.6",
     "express": "^5.1.0",
     "dotenv": "^16.6.1",
     "cookie-parser": "^1.4.7",
