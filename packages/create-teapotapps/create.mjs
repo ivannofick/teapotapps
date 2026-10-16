@@ -236,7 +236,10 @@ export default async function runCreate(args = []) {
 				builds: [
 					{
 						src: "index.js",
-						use: "@vercel/node"
+						use: "@vercel/node",
+						config: {
+							includeFiles: ["src/views/**", "views/**"]
+						}
 					}
 				],
 				routes: [
@@ -264,7 +267,8 @@ export default async function runCreate(args = []) {
 
 		if (wantVercel) {
 			console.log('▲ Vercel deployment:');
-			console.log('👉  npx vercel\n');
+			console.log('👉  npx vercel');
+			console.log('👉  Guide: https://teapotapps.github.io/docs/deployment.html\n');
 			if (wantDatabase) {
 				console.log('💡 Tip: For serverless deployment on Vercel with database, use a cloud database provider with connection pooling (e.g. Supabase, Neon, or PlanetScale).\n');
 			}
