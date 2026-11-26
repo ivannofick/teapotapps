@@ -14,8 +14,8 @@ export const validateApiKey = (req, res, next) => {
         }
 
         const apiKey = req.headers["access-key"] || req.headers["x-api-key"];
-        const validApiKey = APP_KEY;
-        if (!apiKey || apiKey !== validApiKey) {
+        const validApiKey = globalThis.APP_KEY ?? process.env.APP_KEY;
+        if (!validApiKey || !apiKey || apiKey !== validApiKey) {
             return res.status(403).json({ message: "Forbidden: Invalid API key" });
         }
     }
@@ -47,7 +47,13 @@ const validateToken = (req, res, next) => {
         return res.status(401).json({ message: "Forbidden: Access denied" });
     }
 
-    jwt.verify(token, APP_ACCESS_TOKEN_SECRET, async (err, decoded) => {
+    const secret = globalThis.APP_ACCESS_TOKEN_SECRET ?? process.env.APP_ACCESS_TOKEN_SECRET;
+    if (!secret) {
+        console.error("JWT Error: APP_ACCESS_TOKEN_SECRET is not configured");
+        return res.status(500).json({ message: "Internal authentication error" });
+    }
+
+    jwt.verify(token, secret, async (err, decoded) => {
         if (err) {
             console.error("JWT Error:", err.message);
             return res.status(403).json({ message: "Invalid or expired token" });
@@ -97,10 +103,17 @@ export const verifyToken = (req, res, next) => {
  * Middleware to check if the user has one of the allowed roles.
  * Must be used after verifyToken middleware.
  */
-export const checkRole = (allowedRoles) => {
+export const checkRole = (allowedRoles = []) => {
+    const roles = Array.isArray(allowedRoles) ? allowedRoles : [allowedRoles];
     return (req, res, next) => {
+        if (!req.user || req.user.rco === undefined || req.user.rco === null) {
+            return res.status(401).json({
+                status: { code: 401, message: "Unauthorized: Missing user context", type: "fail" },
+                data: null
+            });
+        }
         const role = Number(req.user.rco);
-        if (!allowedRoles.includes(role)) {
+        if (!roles.includes(role)) {
             return res.status(403).json({ 
                 status: { code: 403, message: "Forbidden: Insufficient permissions", type: "fail" },
                 data: null 

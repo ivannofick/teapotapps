@@ -18,7 +18,8 @@ export { paginate, paginateQuery } from './src/libs/pagination.js';
 export {
     validateApiKey,
     verifyTokenVisitor,
-    verifyToken
+    verifyToken,
+    checkRole
 } from './src/middlewares/verifyToken.js';
 
 /**

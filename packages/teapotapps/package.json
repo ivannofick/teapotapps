@@ -14,13 +14,14 @@
     "rest-api",
     "backend"
   ],
-  "homepage": "https://github.com/teapotapps/project#readme",
+  "homepage": "https://github.com/ivannofick/teapotapps#readme",
   "bugs": {
-    "url": "https://github.com/teapotapps/project/issues"
+    "url": "https://github.com/ivannofick/teapotapps/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/teapotapps/project.git"
+    "url": "git+https://github.com/ivannofick/teapotapps.git",
+    "directory": "packages/teapotapps"
   },
   "author": "ivannofick <ivannofick@gmail.com>",
   "license": "MIT",

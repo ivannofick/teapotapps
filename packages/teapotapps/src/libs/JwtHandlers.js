@@ -11,7 +11,8 @@ import jwt from "jsonwebtoken";
  * @returns 
  */
 export const signVisitorToken = (data) => {
-    return jwt.sign(data, process.env.APP_ACCESS_TOKEN_SECRET, {
+    const secret = globalThis.APP_ACCESS_TOKEN_SECRET ?? process.env.APP_ACCESS_TOKEN_SECRET;
+    return jwt.sign(data, secret, {
         expiresIn: "7d",
     });
 };
