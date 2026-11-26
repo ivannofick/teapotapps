@@ -1,9 +1,9 @@
 # ☕ TeapotApps Framework
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![npm version](https://img.shields.io/npm/v/teapotapps.svg)](https://www.npmjs.com/package/teapotapps)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/ivannofick/teapotapps/blob/master/LICENSE)
+[![npm version](https://img.shields.io/npm/v/create-teapotapps.svg)](https://www.npmjs.com/package/create-teapotapps)
 
-TeapotApps is a lightweight Node.js framework built with ECMAScript Modules (ESM). It provides a structured foundation for building backend APIs and server-rendered web applications.
+CLI scaffolder and code generator for [TeapotApps](https://github.com/ivannofick/teapotapps) — a lightweight Node.js framework built with ECMAScript Modules (ESM).
 
 ---
 
@@ -37,7 +37,7 @@ npx create-teapotapps my-app
 ### Option 3: Global CLI Installation
 
 ```bash
-npm install -g teapotapps
+npm install -g create-teapotapps
 teapotapps create my-app
 ```
 
