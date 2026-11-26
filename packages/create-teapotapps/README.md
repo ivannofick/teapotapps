@@ -1,9 +1,21 @@
 # ☕ TeapotApps Framework
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/ivannofick/teapotapps/blob/master/LICENSE)
-[![npm version](https://img.shields.io/npm/v/create-teapotapps.svg)](https://www.npmjs.com/package/create-teapotapps)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![npm teapotapps](https://img.shields.io/npm/v/teapotapps.svg?label=teapotapps)](https://www.npmjs.com/package/teapotapps)
+[![npm create-teapotapps](https://img.shields.io/npm/v/create-teapotapps.svg?label=create-teapotapps)](https://www.npmjs.com/package/create-teapotapps)
 
-CLI scaffolder and code generator for [TeapotApps](https://github.com/ivannofick/teapotapps) — a lightweight Node.js framework built with ECMAScript Modules (ESM).
+TeapotApps is a lightweight Node.js framework built with ECMAScript Modules (ESM). It provides a structured foundation for building backend APIs and server-rendered web applications.
+
+---
+
+## 📦 Packages
+
+This monorepo publishes two synchronized npm packages:
+
+| Package | Description | npm |
+| --- | --- | --- |
+| [`teapotapps`](./packages/teapotapps) | Core runtime framework (Express wrapper, routing, validation, auth middlewares, response helpers) | [`npm install teapotapps`](https://www.npmjs.com/package/teapotapps) |
+| [`create-teapotapps`](./packages/create-teapotapps) | CLI scaffolder & code generator (`create-teapotapps` / `teapotapps` CLI) | [`npm create teapotapps@latest`](https://www.npmjs.com/package/create-teapotapps) |
 
 ---
 
@@ -42,6 +54,14 @@ teapotapps create my-app
 ```
 
 *(You can also use `create-teapotapps my-app` or `teapotapps my-app`)*
+
+### Using the Runtime Framework Directly
+
+If you already have an Express project and only need the runtime primitives (`createTeapotApp`, `routeGroup`, `responseApi`, `validate`, `verifyToken`, `checkRole`, etc.):
+
+```bash
+npm install teapotapps
+```
 
 ### Checking CLI Help & Options
 
